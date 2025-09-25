@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_marginBottom="12dp"
+    android:background="@drawable/lesson_item_background"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/lessonTime"
+        android:layout_width="80dp"
+        android:layout_height="wrap_content"
+        android:text="09:00\n10:30"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:gravity="center" />
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="#E0E0E0"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="12dp" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/lessonName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Математический анализ"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="#333333" />
+
+        <TextView
+            android:id="@+id/lessonRoom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ауд. 301"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginTop="4dp" />
+
+        <TextView
+            android:id="@+id/lessonTeacher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Проф. Иванов И.И."
+            android:textSize="14sp"
+            android:textColor="#666666" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/lessonType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Лекция"
+        android:textSize="12sp"
+        android:padding="4dp"
+        android:textColor="#FFFFFF"
+        android:layout_marginStart="8dp" />
+
+</LinearLayout>
