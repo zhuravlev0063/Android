@@ -1,12 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Button xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dayButtonLayout"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:minWidth="100dp"
-    android:text="ПН"
-    android:textSize="14sp"
-    android:textStyle="bold"
+    android:layout_weight="1"
+    android:orientation="vertical"
     android:background="@drawable/day_button_background"
-    android:textColor="#FFFFFF"
-    android:layout_marginEnd="8dp"
-    android:padding="12dp" />
+    android:layout_margin="4dp"
+    android:padding="8dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <TextView
+        android:id="@+id/dayShortName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ПН"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/dayDate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="15"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:gravity="center" />
+
+</LinearLayout>

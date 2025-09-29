@@ -16,27 +16,29 @@ data class Lesson(
     val type: String,
     val typeColor: Int
 )
+data class DayInfo(
+    val fullName: String,
+    val shortName: String,
+    val dayNumber: Int,
+    val month: String
+)
+
+// Обновленный макет кнопки дня:
+// "ПН\n15 сент"
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var daysContainer: LinearLayout
     private lateinit var scheduleContainer: LinearLayout
-    private lateinit var weekNumeratorBtn: Button
-    private lateinit var weekDenominatorBtn: Button
-
-    private var selectedDayButton: Button? = null
+    private lateinit var prevWeekBtn: Button
+    private lateinit var nextWeekBtn: Button
+    private lateinit var weekRangeText: TextView
+    private lateinit var weekTypeText: TextView
+    private var selectedDayButton: LinearLayout? = null  // Было Button
     private var isNumeratorWeek = true
     private var todayDayName: String = "Понедельник" // Сохраняем сегодняшний день
 
-    private val daysData = listOf(
-        "Понедельник" to "ПН",
-        "Вторник" to "ВТ",
-        "Среда" to "СР",
-        "Четверг" to "ЧТ",
-        "Пятница" to "ПТ",
-        "Суббота" to "СБ",
-        "Воскресенье" to "ВС"
-    )
+    private var currentWeekOffset = 0
 
     // Соответствие дней недели Calendar дням
     private val calendarDays = mapOf(
@@ -123,19 +125,146 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // Инициализация ВСЕХ view сначала
         daysContainer = findViewById(R.id.daysContainer)
         scheduleContainer = findViewById(R.id.scheduleContainer)
-        weekNumeratorBtn = findViewById(R.id.weekNumeratorBtn)
-        weekDenominatorBtn = findViewById(R.id.weekDenominatorBtn)
+        prevWeekBtn = findViewById(R.id.prevWeekBtn)
+        nextWeekBtn = findViewById(R.id.nextWeekBtn)
+        weekRangeText = findViewById(R.id.weekRangeText)
+        weekTypeText = findViewById(R.id.weekTypeText)
+        // Определяем сегодняшний день
+        determineCurrentDay()
 
-        // Определяем сегодняшний день и тип недели
-        determineCurrentDayAndWeek()
-
-        setupWeekButtons()
-        setupDayButtons() // Теперь кнопки создаются ПЕРВЫМИ
-
-        // Показываем расписание для сегодняшнего дня
+        setupWeekNavigation()
+        setupDayButtons()
         showTodaySchedule()
+    }
+
+    private fun determineCurrentDay() {
+        val calendar = Calendar.getInstance()
+        val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        todayDayName = calendarDays[currentDayOfWeek] ?: "Понедельник"
+    }
+
+    private fun setupWeekNavigation() {
+        prevWeekBtn.setOnClickListener {
+            currentWeekOffset--
+            updateWeekDisplay()
+            refreshDayButtons()
+        }
+
+        nextWeekBtn.setOnClickListener {
+            currentWeekOffset++
+            updateWeekDisplay()
+            refreshDayButtons()
+        }
+
+        // Кнопка "Сегодня" для быстрого возврата
+        weekRangeText.setOnClickListener {
+            currentWeekOffset = 0
+            updateWeekDisplay()
+            refreshDayButtons()
+            showTodaySchedule()
+        }
+
+        updateWeekDisplay()
+    }
+
+    private fun updateWeekDisplay() {
+        val calendar = Calendar.getInstance()
+
+        // Находим понедельник текущей отображаемой недели
+        calendar.add(Calendar.WEEK_OF_YEAR, currentWeekOffset)
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+
+        val startDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val startMonth = getRussianMonth(calendar.get(Calendar.MONTH))
+
+        // Переходим к воскресенью
+        calendar.add(Calendar.DAY_OF_MONTH, 6)
+        val endDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val endMonth = getRussianMonth(calendar.get(Calendar.MONTH))
+
+        // Форматируем текст диапазона дат
+        val weekText = if (startMonth == endMonth) {
+            "$startDay - $endDay $startMonth"
+        } else {
+            "$startDay $startMonth - $endDay $endMonth"
+        }
+
+        weekRangeText.text = weekText
+
+        // Определяем тип недели (числитель/знаменатель)
+        val isNumerator = determineWeekType()
+        val weekType = if (isNumerator) "(числитель)" else "(знаменатель)"
+        weekTypeText.text = weekType
+
+        // Выделяем текст если это текущая неделя
+        if (currentWeekOffset == 0) {
+            weekRangeText.setTextColor(0xFFFFFF00.toInt()) // Желтый цвет для текущей недели
+            weekTypeText.setTextColor(0xFFFFFF00.toInt())
+        } else {
+            weekRangeText.setTextColor(0xFFFFFFFF.toInt()) // Белый цвет для других недель
+            weekTypeText.setTextColor(0xFFE3F2FD.toInt())
+        }
+    }
+    private fun determineWeekType(): Boolean {
+        // Фиксированная дата начала учебного года (1 сентября 2024)
+        val academicYearStart = Calendar.getInstance().apply {
+            set(Calendar.YEAR, 2024)
+            set(Calendar.MONTH, Calendar.SEPTEMBER)
+            set(Calendar.DAY_OF_MONTH, 1)
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        // Берем понедельник текущей отображаемой недели
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.WEEK_OF_YEAR, currentWeekOffset)
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+
+        // Вычисляем разницу в неделях от начала учебного года
+        val diffInMillis = calendar.timeInMillis - academicYearStart.timeInMillis
+        val diffInWeeks = (diffInMillis / (1000 * 60 * 60 * 24 * 7)).toInt()
+
+        // 1 сентября 2024 была первая неделя (числитель)
+        // Четные недели - числитель, нечетные - знаменатель
+        return (diffInWeeks % 2 == 0)
+    }
+    private fun getRussianMonth(month: Int): String {
+        val months = listOf("янв", "фев", "мар", "апр", "мая", "июн",
+            "июл", "авг", "сен", "окт", "ноя", "дек")
+        return months[month]
+    }
+    private fun refreshDayButtons() {
+        daysContainer.removeAllViews()
+        selectedDayButton = null
+        setupDayButtons()
+    }
+
+    // Обновленный метод getFormattedDateForDay
+    private fun getFormattedDateForDay(dayName: String): String {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.WEEK_OF_YEAR, currentWeekOffset)
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+
+        val dayNames = listOf("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье")
+        val russianMonths = listOf("января", "февраля", "марта", "апреля", "мая", "июня",
+            "июля", "августа", "сентября", "октября", "ноября", "декабря")
+
+        val dayIndex = dayNames.indexOf(dayName)
+        if (dayIndex >= 0) {
+            calendar.add(Calendar.DAY_OF_MONTH, dayIndex)
+            val dayNumber = calendar.get(Calendar.DAY_OF_MONTH)
+            val month = russianMonths[calendar.get(Calendar.MONTH)]
+            val year = calendar.get(Calendar.YEAR)
+
+            return "$dayName, $dayNumber $month $year"
+        }
+
+        return dayName
     }
 
     // Определяем сегодняшний день и тип недели
@@ -171,59 +300,51 @@ class MainActivity : AppCompatActivity() {
         // isNumeratorWeek = (diffInWeeks % 2 == 1)
     }
 
-    private fun setupWeekButtons() {
-        weekNumeratorBtn.setOnClickListener {
-            isNumeratorWeek = true
-            updateWeekButtons()
-            refreshSchedule()
-        }
-
-        weekDenominatorBtn.setOnClickListener {
-            isNumeratorWeek = false
-            updateWeekButtons()
-            refreshSchedule()
-        }
-        updateWeekButtons()
-    }
-
-    private fun updateWeekButtons() {
-        if (isNumeratorWeek) {
-            weekNumeratorBtn.setBackgroundResource(R.drawable.week_button_selected)
-            weekDenominatorBtn.setBackgroundResource(R.drawable.week_button_background)
-        } else {
-            weekNumeratorBtn.setBackgroundResource(R.drawable.week_button_background)
-            weekDenominatorBtn.setBackgroundResource(R.drawable.week_button_selected)
-        }
-    }
-
+    // В setupDayButtons():
     private fun setupDayButtons() {
-        daysData.forEach { (fullName, shortName) ->
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.WEEK_OF_YEAR, currentWeekOffset)
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+
+        val dayNames = listOf("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье")
+        val shortNames = listOf("ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС")
+
+        for (i in 0 until 7) {
+            val dayNumber = calendar.get(Calendar.DAY_OF_MONTH)
+            val fullName = dayNames[i]
+
             val dayButton = LayoutInflater.from(this).inflate(
                 R.layout.layout_day_button,
                 daysContainer,
                 false
-            ) as Button
+            ) as LinearLayout
 
-            dayButton.text = shortName
+            dayButton.findViewById<TextView>(R.id.dayShortName).text = shortNames[i]
+            dayButton.findViewById<TextView>(R.id.dayDate).text = dayNumber.toString()
+
             dayButton.setOnClickListener {
                 selectDayButton(dayButton)
                 showDaySchedule(fullName)
             }
+
             daysContainer.addView(dayButton)
 
-            // Сразу выделяем сегодняшний день при создании кнопки
-            if (fullName == todayDayName) {
+            // Выделяем сегодняшний день только если это текущая неделя
+            if (currentWeekOffset == 0 && fullName == todayDayName) {
                 selectDayButton(dayButton)
             }
+
+            calendar.add(Calendar.DAY_OF_MONTH, 1)
         }
 
-        // Если сегодняшний день не нашелся (например, воскресенье без пар), выделяем первый
+        // Если ничего не выделено, выделяем первый день
         if (selectedDayButton == null && daysContainer.childCount > 0) {
-            selectDayButton(daysContainer.getChildAt(0) as Button)
+            selectDayButton(daysContainer.getChildAt(0) as LinearLayout)
+            showDaySchedule(dayNames[0])
         }
     }
 
-    private fun selectDayButton(button: Button) {
+    private fun selectDayButton(button: LinearLayout) {
         selectedDayButton?.setBackgroundResource(R.drawable.day_button_background)
         button.setBackgroundResource(R.drawable.day_button_selected)
         selectedDayButton = button
@@ -239,7 +360,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getCurrentSelectedDay(): String {
-        return daysData.firstOrNull { it.second == selectedDayButton?.text }?.first ?: "Понедельник"
+        val calendar = Calendar.getInstance()
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+
+        val dayNames = listOf("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье")
+
+        for (i in 0 until daysContainer.childCount) {
+            if (daysContainer.getChildAt(i) == selectedDayButton) {
+                return dayNames[i]
+            }
+        }
+
+        return "Понедельник"
     }
 
     private fun showDaySchedule(dayName: String) {
@@ -251,13 +383,14 @@ class MainActivity : AppCompatActivity() {
             false
         )
 
-        // Заголовок дня (ТОЛЬКО название дня)
+        // Заголовок дня - ТОЛЬКО название дня (без даты)
         val dayTitle = dayCard.findViewById<TextView>(R.id.dayTitle)
-        dayTitle.text = dayName
+        dayTitle.text = dayName // Просто название дня
         dayTitle.setTextColor(0xFF333333.toInt())
 
         // Пары
         val lessonsContainer = dayCard.findViewById<LinearLayout>(R.id.lessonsContainer)
+        val isNumeratorWeek = determineWeekType()
         val schedule = if (isNumeratorWeek) scheduleNumerator else scheduleDenominator
         val lessons = schedule[dayName] ?: emptyList()
 
@@ -299,4 +432,7 @@ class MainActivity : AppCompatActivity() {
 
         scheduleContainer.addView(dayCard)
     }
+
+// Убираем ненужный метод getFormattedDateForDay, так как он больше не используется
+
 }
