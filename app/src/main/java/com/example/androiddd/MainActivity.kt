@@ -8,7 +8,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.content.Intent
 import java.util.*
-
+import android.view.View // ★★★ ДОБАВИТЬ ЭТОТ ИМПОРТ ★★★
+import android.widget.* // ★★★ ДОБАВИТЬ ЭТОТ ИМПОРТ ★★★
 data class Lesson(
     val time: String,
     val name: String,
@@ -38,7 +39,8 @@ class MainActivity : AppCompatActivity() {
     private var selectedDayButton: LinearLayout? = null  // Было Button
     private var isNumeratorWeek = true
     private var todayDayName: String = "Понедельник" // Сохраняем сегодняшний день
-
+    // Константа для идентификатора новых пар
+    private var newLessonCounter = 0
     private var currentWeekOffset = 0
 
     // Соответствие дней недели Calendar дням
@@ -394,7 +396,14 @@ class MainActivity : AppCompatActivity() {
         val schedule = if (isNumeratorWeek) scheduleNumerator else scheduleDenominator
         val lessons = schedule[dayName] ?: emptyList()
 
-        if (lessons.isEmpty()) {
+        // Загружаем сохраненные уроки для этого дня
+        val savedLessons = loadSavedLessonsForDay(dayName)
+
+        // Объединяем оригинальные и сохраненные уроки
+        val allLessons = lessons + savedLessons
+
+
+        if (allLessons.isEmpty()) {
             val message = when (dayName) {
                 "Воскресенье" -> "🎉 Воскресенье - выходной день!"
                 else -> "📚 На этой неделе пар нет"
@@ -410,13 +419,18 @@ class MainActivity : AppCompatActivity() {
             lessonsContainer.addView(emptyText)
         }  else {
 
-            lessons.forEach { lesson ->
+            allLessons.forEach { lesson ->
                 val lessonView = LayoutInflater.from(this).inflate(
                     R.layout.layout_lesson_item,
                     lessonsContainer,
                     false
                 )
-
+                // Используем сохраненные данные
+                val lessonId = if (lesson.name.startsWith("new_lesson_")) {
+                    lesson.name // для новых пар используем имя как ID
+                } else {
+                    lesson.name // для оригинальных пар используем оригинальное имя
+                }
                 // Используем сохраненные данные
                 val savedName = getSavedLessonData(lesson.name, "name", lesson.name)
                 val savedTime = getSavedLessonData(lesson.name, "time", lesson.time)
@@ -442,9 +456,118 @@ class MainActivity : AppCompatActivity() {
                 lessonsContainer.addView(lessonView)
             }
         }
-
+        // Обработчик кнопки добавления
+        val addButton = dayCard.findViewById<Button>(R.id.addLessonButton)
+        addButton.setOnClickListener {
+            showAddLessonDialog(dayName)
+        }
 
         scheduleContainer.addView(dayCard)
+    }
+    // Метод для загрузки сохраненных уроков для конкретного дня
+    // Метод для загрузки сохраненных уроков для конкретного дня
+    private fun loadSavedLessonsForDay(dayName: String): List<Lesson> {
+        val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
+        val allEntries = sharedPref.all
+        val lessons = mutableListOf<Lesson>()
+
+        for ((key, value) in allEntries) {
+            if (key.endsWith("_day") && value == dayName) {
+                val lessonId = key.removeSuffix("_day")
+
+                val name = sharedPref.getString("${lessonId}_name", "") ?: ""
+                val time = sharedPref.getString("${lessonId}_time", "") ?: ""
+                val teacher = sharedPref.getString("${lessonId}_teacher", "") ?: ""
+                val room = sharedPref.getString("${lessonId}_room", "") ?: ""
+                val type = sharedPref.getString("${lessonId}_type", "Лекция") ?: "Лекция"
+                val color = sharedPref.getInt("${lessonId}_type_color", 0xFF2196F3.toInt())
+
+                if (name.isNotBlank() && time.isNotBlank()) {
+                    lessons.add(Lesson(time, name, room, teacher, type, color))
+                }
+            }
+        }
+
+        return lessons
+    }
+    // Метод для показа диалога добавления новой пары
+    private fun showAddLessonDialog(dayName: String) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_lesson, null)
+
+        val dialog = android.app.AlertDialog.Builder(this)
+            .setView(dialogView)
+            .create()
+
+        setupAddLessonDialog(dialogView, dialog, dayName)
+        dialog.show()
+    }
+    // Настройка диалога добавления
+    private fun setupAddLessonDialog(dialogView: View, dialog: android.app.AlertDialog, dayName: String) {
+        val nameInput = dialogView.findViewById<EditText>(R.id.newLessonName)
+        val timeInput = dialogView.findViewById<EditText>(R.id.newLessonTime)
+        val teacherInput = dialogView.findViewById<EditText>(R.id.newLessonTeacher)
+        val roomInput = dialogView.findViewById<EditText>(R.id.newLessonRoom)
+        val typeSpinner = dialogView.findViewById<Spinner>(R.id.newLessonTypeSpinner)
+
+        // Настраиваем спиннер типов
+        val lessonTypes = listOf("Лекция", "П/З", "Лаб", "Семинар", "Консультация", "Доп занятие")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, lessonTypes)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        typeSpinner.adapter = adapter
+
+        val confirmButton = dialogView.findViewById<Button>(R.id.addLessonConfirmButton)
+        val cancelButton = dialogView.findViewById<Button>(R.id.addLessonCancelButton)
+
+        confirmButton.setOnClickListener {
+            val newName = nameInput.text.toString().trim()
+            val newTime = timeInput.text.toString().trim()
+            val newTeacher = teacherInput.text.toString().trim()
+            val newRoom = roomInput.text.toString().trim()
+            val newType = typeSpinner.selectedItem.toString()
+
+            if (newName.isNotBlank() && newTime.isNotBlank()) {
+                addNewLesson(dayName, newName, newTime, newTeacher, newRoom, newType)
+                dialog.dismiss()
+                refreshCurrentSchedule()
+            } else {
+                Toast.makeText(this, "Заполните название и время", Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        cancelButton.setOnClickListener {
+            dialog.dismiss()
+        }
+    }
+    // Метод для добавления новой пары
+    private fun addNewLesson(dayName: String, name: String, time: String, teacher: String, room: String, type: String) {
+        val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
+
+        // Создаем уникальный ID для новой пары
+        newLessonCounter++
+        val lessonId = "new_lesson_${System.currentTimeMillis()}_$newLessonCounter"
+
+        // Получаем цвет по умолчанию для типа
+        val defaultColor = when (type) {
+            "Лекция" -> 0xFF2196F3.toInt()
+            "П/З" -> 0xFF4CAF50.toInt()
+            "Лаб" -> 0xFFFF5722.toInt()
+            "Семинар" -> 0xFF9C27B0.toInt()
+            "Консультация" -> 0xFFFF9800.toInt()
+            "Доп занятие" -> 0xFF607D8B.toInt()
+            else -> 0xFF2196F3.toInt()
+        }
+
+        // Сохраняем данные
+        with(sharedPref.edit()) {
+            putString("${lessonId}_name", name)
+            putString("${lessonId}_time", time)
+            putString("${lessonId}_teacher", teacher)
+            putString("${lessonId}_room", room)
+            putString("${lessonId}_type", type)
+            putInt("${lessonId}_type_color", defaultColor)
+            putString("${lessonId}_day", dayName) // Сохраняем день для фильтрации
+            apply()
+        }
     }
     // В классе MainActivity добавляем константу
     companion object {
@@ -452,13 +575,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun openLessonDetails(lesson: Lesson) {
-        // Берем сохраненные данные
-        val savedName = getSavedLessonData(lesson.name, "name", lesson.name)
-        val savedTime = getSavedLessonData(lesson.name, "time", lesson.time)
-        val savedTeacher = getSavedLessonData(lesson.name, "teacher", lesson.teacher)
-        val savedRoom = getSavedLessonData(lesson.name, "room", lesson.room)
-        val savedType = getSavedLessonData(lesson.name, "type", lesson.type)
-        val savedTypeColor = getSavedLessonColor(lesson.name, "type_color", lesson.typeColor)
+        // Определяем ID урока (оригинальный или новый)
+        val lessonId = if (lesson.name.startsWith("new_lesson_")) {
+            lesson.name // используем имя как ID для новых пар
+        } else {
+            lesson.name // для оригинальных пар используем оригинальное имя
+        }
+
+        val savedName = getSavedLessonData(lessonId, "name", lesson.name)
+        val savedTime = getSavedLessonData(lessonId, "time", lesson.time)
+        val savedTeacher = getSavedLessonData(lessonId, "teacher", lesson.teacher)
+        val savedRoom = getSavedLessonData(lessonId, "room", lesson.room)
+        val savedType = getSavedLessonData(lessonId, "type", lesson.type)
+        val savedTypeColor = getSavedLessonColor(lessonId, "type_color", lesson.typeColor)
 
         val intent = Intent(this, LessonDetailActivity::class.java).apply {
             putExtra("LESSON_NAME", savedName)
@@ -466,8 +595,8 @@ class MainActivity : AppCompatActivity() {
             putExtra("LESSON_TEACHER", savedTeacher)
             putExtra("LESSON_ROOM", savedRoom)
             putExtra("LESSON_TYPE", savedType)
-            putExtra("LESSON_TYPE_COLOR", savedTypeColor) // Передаем сохраненный цвет
-            putExtra("ORIGINAL_LESSON_NAME", lesson.name)
+            putExtra("LESSON_TYPE_COLOR", savedTypeColor)
+            putExtra("ORIGINAL_LESSON_NAME", lessonId) // передаем ID вместо оригинального имени
         }
         startActivityForResult(intent, LESSON_DETAIL_REQUEST_CODE)
     }

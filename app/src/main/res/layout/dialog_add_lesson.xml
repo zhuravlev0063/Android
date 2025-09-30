@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@drawable/dialog_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Заголовок -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="➕ Добавить новую пару"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:gravity="center"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Название пары -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Название предмета:"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/newLessonName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Новый предмет"
+            android:textSize="16sp"
+            android:background="@drawable/edit_text_rounded"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Время -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Время:"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/newLessonTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="09:00-10:30"
+            android:textSize="16sp"
+            android:background="@drawable/edit_text_rounded"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Преподаватель -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Преподаватель:"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/newLessonTeacher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Преподаватель"
+            android:textSize="16sp"
+            android:background="@drawable/edit_text_rounded"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Аудитория -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Аудитория:"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <EditText
+            android:id="@+id/newLessonRoom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ауд. 000"
+            android:textSize="16sp"
+            android:background="@drawable/edit_text_rounded"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Тип пары -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Тип пары:"
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="4dp" />
+
+        <Spinner
+            android:id="@+id/newLessonTypeSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Кнопки -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/addLessonConfirmButton"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:text="Добавить"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#FFFFFF"
+                android:background="@drawable/button_rounded"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/addLessonCancelButton"
+                android:layout_width="0dp"
+                android:layout_height="44dp"
+                android:layout_weight="1"
+                android:text="Отмена"
+                android:textSize="14sp"
+                android:textColor="#666666"
+                android:background="@drawable/button_cancel" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

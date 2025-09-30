@@ -26,4 +26,16 @@
 
     </LinearLayout>
 
+    <!-- КНОПКА ДОБАВЛЕНИЯ НОВОЙ ПАРЫ -->
+    <Button
+        android:id="@+id/addLessonButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center"
+        android:text="+"
+        android:textSize="24sp"
+        android:textColor="#FFFFFF"
+        android:background="@drawable/add_button_background"
+        android:layout_marginTop="12dp" />
+
 </LinearLayout>
