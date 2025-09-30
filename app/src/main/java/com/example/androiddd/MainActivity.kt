@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.content.Intent
 import java.util.*
 
 data class Lesson(
@@ -343,7 +344,6 @@ class MainActivity : AppCompatActivity() {
             showDaySchedule(dayNames[0])
         }
     }
-
     private fun selectDayButton(button: LinearLayout) {
         selectedDayButton?.setBackgroundResource(R.drawable.day_button_background)
         button.setBackgroundResource(R.drawable.day_button_selected)
@@ -408,7 +408,8 @@ class MainActivity : AppCompatActivity() {
                 setPadding(0, 60, 0, 60)
             }
             lessonsContainer.addView(emptyText)
-        } else {
+        }  else {
+
             lessons.forEach { lesson ->
                 val lessonView = LayoutInflater.from(this).inflate(
                     R.layout.layout_lesson_item,
@@ -416,23 +417,114 @@ class MainActivity : AppCompatActivity() {
                     false
                 )
 
-                lessonView.findViewById<TextView>(R.id.lessonTime).text = lesson.time
-                lessonView.findViewById<TextView>(R.id.lessonName).text = lesson.name
-                lessonView.findViewById<TextView>(R.id.lessonRoom).text = lesson.room
-                lessonView.findViewById<TextView>(R.id.lessonTeacher).text = lesson.teacher
+                // Используем сохраненные данные
+                val savedName = getSavedLessonData(lesson.name, "name", lesson.name)
+                val savedTime = getSavedLessonData(lesson.name, "time", lesson.time)
+                val savedTeacher = getSavedLessonData(lesson.name, "teacher", lesson.teacher)
+                val savedRoom = getSavedLessonData(lesson.name, "room", lesson.room)
+                val savedType = getSavedLessonData(lesson.name, "type", lesson.type)
+                val savedTypeColor = getSavedLessonColor(lesson.name, "type_color", lesson.typeColor) // Используем новый метод
+
+                lessonView.findViewById<TextView>(R.id.lessonTime).text = savedTime
+                lessonView.findViewById<TextView>(R.id.lessonName).text = savedName
+                lessonView.findViewById<TextView>(R.id.lessonRoom).text = savedRoom
+                lessonView.findViewById<TextView>(R.id.lessonTeacher).text = savedTeacher
 
                 val typeView = lessonView.findViewById<TextView>(R.id.lessonType)
-                typeView.text = lesson.type
-                typeView.setBackgroundColor(lesson.typeColor)
+                typeView.text = savedType
+                typeView.setBackgroundColor(savedTypeColor)
                 typeView.setTextColor(0xFFFFFFFF.toInt())
+
+                lessonView.setOnClickListener {
+                    openLessonDetails(lesson)
+                }
 
                 lessonsContainer.addView(lessonView)
             }
         }
 
+
         scheduleContainer.addView(dayCard)
     }
+    // В классе MainActivity добавляем константу
+    companion object {
+        private const val LESSON_DETAIL_REQUEST_CODE = 1001
+    }
 
-// Убираем ненужный метод getFormattedDateForDay, так как он больше не используется
+    private fun openLessonDetails(lesson: Lesson) {
+        // Берем сохраненные данные
+        val savedName = getSavedLessonData(lesson.name, "name", lesson.name)
+        val savedTime = getSavedLessonData(lesson.name, "time", lesson.time)
+        val savedTeacher = getSavedLessonData(lesson.name, "teacher", lesson.teacher)
+        val savedRoom = getSavedLessonData(lesson.name, "room", lesson.room)
+        val savedType = getSavedLessonData(lesson.name, "type", lesson.type)
+        val savedTypeColor = getSavedLessonColor(lesson.name, "type_color", lesson.typeColor)
+
+        val intent = Intent(this, LessonDetailActivity::class.java).apply {
+            putExtra("LESSON_NAME", savedName)
+            putExtra("LESSON_TIME", savedTime)
+            putExtra("LESSON_TEACHER", savedTeacher)
+            putExtra("LESSON_ROOM", savedRoom)
+            putExtra("LESSON_TYPE", savedType)
+            putExtra("LESSON_TYPE_COLOR", savedTypeColor) // Передаем сохраненный цвет
+            putExtra("ORIGINAL_LESSON_NAME", lesson.name)
+        }
+        startActivityForResult(intent, LESSON_DETAIL_REQUEST_CODE)
+    }
+
+    // Новый метод для получения всех сохраненных данных
+    // Новый метод для получения всех сохраненных данных
+    private fun getSavedLessonData(originalName: String, field: String, defaultValue: String): String {
+        val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
+        return sharedPref.getString("${originalName}_$field", defaultValue) ?: defaultValue
+    }
+
+    // Добавляем отдельный метод для получения цвета
+    private fun getSavedLessonColor(originalName: String, field: String, defaultValue: Int): Int {
+        val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
+        return sharedPref.getInt("${originalName}_$field", defaultValue)
+    }
+
+    // Обновляем onActivityResult
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == LESSON_DETAIL_REQUEST_CODE && resultCode == RESULT_OK) {
+            val updatedName = data?.getStringExtra("UPDATED_LESSON_NAME")
+            val updatedTime = data?.getStringExtra("UPDATED_LESSON_TIME")
+            val updatedTeacher = data?.getStringExtra("UPDATED_LESSON_TEACHER")
+            val updatedRoom = data?.getStringExtra("UPDATED_LESSON_ROOM")
+            val updatedType = data?.getStringExtra("UPDATED_LESSON_TYPE")
+            val updatedTypeColor = data?.getIntExtra("UPDATED_LESSON_TYPE_COLOR", 0xFF2196F3.toInt())
+            val originalName = data?.getStringExtra("ORIGINAL_LESSON_NAME")
+
+            if (updatedName != null && originalName != null) {
+                // Сохраняем все данные
+                val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
+                with(sharedPref.edit()) {
+                    putString("${originalName}_name", updatedName)
+                    putString("${originalName}_time", updatedTime ?: "")
+                    putString("${originalName}_teacher", updatedTeacher ?: "")
+                    putString("${originalName}_room", updatedRoom ?: "")
+                    putString("${originalName}_type", updatedType ?: "")
+                    putInt("${originalName}_type_color", updatedTypeColor ?: 0xFF2196F3.toInt())
+                    apply()
+                }
+
+                refreshCurrentSchedule()
+            }
+        }
+    }
+
+    // Добавляем метод для обновления расписания
+    private fun refreshCurrentSchedule() {
+        val currentDay = getCurrentSelectedDay()
+        showDaySchedule(currentDay)
+    }
+    private fun getSavedLessonName(originalName: String): String {
+        val sharedPref = getSharedPreferences("lesson_names", MODE_PRIVATE)
+        return sharedPref.getString(originalName, originalName) ?: originalName
+    }
+
 
 }
