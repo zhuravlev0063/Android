@@ -10,6 +10,12 @@ import android.content.Intent
 import java.util.*
 import android.view.View // ★★★ ДОБАВИТЬ ЭТОТ ИМПОРТ ★★★
 import android.widget.* // ★★★ ДОБАВИТЬ ЭТОТ ИМПОРТ ★★★
+import android.graphics.drawable.ColorDrawable
+import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
+import android.os.Vibrator
+import android.os.VibrationEffect
+import android.content.Context
 data class Lesson(
     val time: String,
     val name: String,
@@ -24,12 +30,18 @@ data class DayInfo(
     val dayNumber: Int,
     val month: String
 )
+data class SelectedLesson(
+    val name: String,
+    val time: String,
+    val teacher: String,
+    val room: String,
+    val day: String
+)
 
 // Обновленный макет кнопки дня:
 // "ПН\n15 сент"
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var daysContainer: LinearLayout
     private lateinit var scheduleContainer: LinearLayout
     private lateinit var prevWeekBtn: Button
@@ -53,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         Calendar.SATURDAY to "Суббота",
         Calendar.SUNDAY to "Воскресенье"
     )
+    private var longPressedLessonView: View? = null
 
     // ЧИСЛИТЕЛЬ - данные для понедельника
     private val scheduleNumerator = mapOf(
@@ -123,6 +136,12 @@ class MainActivity : AppCompatActivity() {
             ),
         "Воскресенье" to emptyList()
     )
+    private lateinit var deleteModeLayout: LinearLayout
+    private lateinit var deleteSelectedButton: Button
+    private lateinit var cancelDeleteButton: Button
+    private var isDeleteMode = false
+    private val selectedLessons = mutableListOf<SelectedLesson>()
+    private lateinit var selectAllCheckBox: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,12 +154,35 @@ class MainActivity : AppCompatActivity() {
         nextWeekBtn = findViewById(R.id.nextWeekBtn)
         weekRangeText = findViewById(R.id.weekRangeText)
         weekTypeText = findViewById(R.id.weekTypeText)
+        // Инициализация views для удаления
+        deleteModeLayout = findViewById(R.id.deleteModeLayout)
+        deleteSelectedButton = findViewById(R.id.deleteSelectedButton)
+        selectAllCheckBox = findViewById(R.id.selectAllCheckBox)
+        setupDeleteMode()
         // Определяем сегодняшний день
         determineCurrentDay()
 
         setupWeekNavigation()
         setupDayButtons()
         showTodaySchedule()
+        setupLessonClickListeners()
+        setupModernBackHandler()
+    }
+    private fun setupModernBackHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                println("★ OnBackPressedDispatcher вызван! isDeleteMode = $isDeleteMode")
+
+                if (isDeleteMode) {
+                    println("★ Выход из режима удаления через OnBackPressedDispatcher")
+                    exitDeleteMode()
+                } else {
+                    // Если не в режиме удаления - стандартное поведение
+                    isEnabled = false
+                    onBackPressed()
+                }
+            }
+        })
     }
 
     private fun determineCurrentDay() {
@@ -459,13 +501,24 @@ class MainActivity : AppCompatActivity() {
         // Обработчик кнопки добавления
         val addButton = dayCard.findViewById<Button>(R.id.addLessonButton)
         addButton.setOnClickListener {
-            showAddLessonDialog(dayName)
+            if (!isDeleteMode) {
+                showAddLessonDialog(dayName)
+            }
         }
 
+        // В режиме удаления кнопка добавления неактивна
+        addButton.isEnabled = !isDeleteMode
+
         scheduleContainer.addView(dayCard)
+
+        setupLessonClickListeners()
+
+        // Обновляем UI если мы в режиме удаления
+        if (isDeleteMode) {
+            updateLessonsSelectionUI()
+        }
     }
-    // Метод для загрузки сохраненных уроков для конкретного дня
-    // Метод для загрузки сохраненных уроков для конкретного дня
+
     private fun loadSavedLessonsForDay(dayName: String): List<Lesson> {
         val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
         val allEntries = sharedPref.all
@@ -602,7 +655,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     // Новый метод для получения всех сохраненных данных
-    // Новый метод для получения всех сохраненных данных
     private fun getSavedLessonData(originalName: String, field: String, defaultValue: String): String {
         val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
         return sharedPref.getString("${originalName}_$field", defaultValue) ?: defaultValue
@@ -654,6 +706,465 @@ class MainActivity : AppCompatActivity() {
         val sharedPref = getSharedPreferences("lesson_names", MODE_PRIVATE)
         return sharedPref.getString(originalName, originalName) ?: originalName
     }
+    // Настройка режима удаления
+    private fun setupDeleteMode() {
+        // ★★★ УБИРАЕМ старый обработчик на весь контейнер ★★★
+        // scheduleContainer.setOnLongClickListener { ... }
 
+        deleteSelectedButton.setOnClickListener {
+            deleteSelectedLessons()
+        }
+
+        // Обработчик для "Выбрать все"
+        val selectAllLayout = findViewById<LinearLayout>(R.id.selectAllLayout)
+        selectAllLayout.setOnClickListener {
+            val totalLessonsCount = getTotalLessonsCount()
+            val isCurrentlyAllSelected = selectedLessons.size == totalLessonsCount
+
+            if (isCurrentlyAllSelected && totalLessonsCount > 0) {
+                // Если все уже выбраны - снимаем выделение
+                deselectAllLessons()
+            } else if (totalLessonsCount > 0) {
+                // Если не все выбраны - выбираем все
+                selectAllLessons()
+            }
+        }
+    }
+    // Выбрать все пары в текущем дне
+    private fun selectAllLessons() {
+        val currentDay = getCurrentSelectedDay()
+        val isNumeratorWeek = determineWeekType()
+        val schedule = if (isNumeratorWeek) scheduleNumerator else scheduleDenominator
+        val originalLessons = schedule[currentDay] ?: emptyList()
+        val savedLessons = loadSavedLessonsForDay(currentDay)
+        val allLessons = originalLessons + savedLessons
+
+        selectedLessons.clear()
+
+        // Добавляем все пары текущего дня в selectedLessons
+        for (lesson in allLessons) {
+            val selectedLesson = SelectedLesson(
+                lesson.name,
+                lesson.time,
+                lesson.teacher,
+                lesson.room,
+                currentDay
+            )
+            selectedLessons.add(selectedLesson)
+        }
+
+        // Обновляем UI
+        updateLessonsSelectionUI()
+
+        println("Выбрано всех пар: ${selectedLessons.size}")
+    }
+
+    // Снять выделение со всех пар
+    private fun deselectAllLessons() {
+        selectedLessons.clear()
+        updateLessonsSelectionUI()
+        println("Снято выделение со всех пар")
+    }
+    // Получить общее количество пар в текущем дне
+    private fun getTotalLessonsCount(): Int {
+        val currentDay = getCurrentSelectedDay()
+        val isNumeratorWeek = determineWeekType()
+        val schedule = if (isNumeratorWeek) scheduleNumerator else scheduleDenominator
+        val originalLessons = schedule[currentDay] ?: emptyList()
+        val savedLessons = loadSavedLessonsForDay(currentDay)
+        return originalLessons.size + savedLessons.size
+    }
+
+    // Обновить состояние всех CheckBox'ов
+    private fun updateAllCheckBoxesState(isChecked: Boolean) {
+        for (i in 0 until scheduleContainer.childCount) {
+            val dayCard = scheduleContainer.getChildAt(i)
+            val lessonsContainer = dayCard.findViewById<LinearLayout>(R.id.lessonsContainer)
+
+            for (j in 0 until lessonsContainer.childCount) {
+                val lessonView = lessonsContainer.getChildAt(j)
+                val checkBox = lessonView.findViewById<CheckBox>(R.id.lessonCheckBox)
+                val lessonLayout = lessonView.findViewById<LinearLayout>(R.id.lessonItemLayout)
+
+                checkBox.isChecked = isChecked
+
+                if (isChecked) {
+                    lessonLayout.background = resources.getDrawable(R.drawable.lesson_item_selected)
+                } else {
+                    lessonLayout.background = resources.getDrawable(R.drawable.lesson_item_background)
+                }
+            }
+        }
+    }
+    private fun enterDeleteMode(selectedLessonView: View? = null) {
+        isDeleteMode = true
+        deleteModeLayout.visibility = View.VISIBLE
+
+        // ★★★ СНАЧАЛА ВЫБИРАЕМ ПАРУ ★★★
+        selectedLessonView?.let { lessonView ->
+            toggleLessonSelection(lessonView)
+        }
+
+        // ★★★ ПЕРЕУСТАНАВЛИВАЕМ ОБРАБОТЧИКИ ДЛЯ РЕЖИМА УДАЛЕНИЯ ★★★
+        setupLessonClickListeners()
+
+        // ★★★ ПОТОМ ОБНОВЛЯЕМ ВЕСЬ UI ★★★
+        updateLessonsSelectionUI()
+
+        // Показываем Toast с инструкцией
+        Toast.makeText(this, "Режим удаления - выберите пары", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Нажмите 'Назад' для выхода из режима", Toast.LENGTH_LONG).show()
+
+        println("Вход в режим удаления")
+    }
+    // Выход из режима удаления
+    private fun exitDeleteMode() {
+        isDeleteMode = false
+        deleteModeLayout.visibility = View.GONE
+        selectAllCheckBox.setImageResource(R.drawable.checkbox_unchecked)
+        selectedLessons.clear()
+
+        // ★★★ ПЕРЕУСТАНАВЛИВАЕМ ОБРАБОТЧИКИ ДЛЯ ОБЫЧНОГО РЕЖИМА ★★★
+        setupLessonClickListeners()
+
+        updateLessonsSelectionUI()
+
+        println("Выход из режима удаления")
+    }
+    // Обновление UI элементов в зависимости от режима
+    private fun updateLessonsSelectionUI() {
+        for (i in 0 until scheduleContainer.childCount) {
+            val dayCard = scheduleContainer.getChildAt(i)
+            val lessonsContainer = dayCard.findViewById<LinearLayout>(R.id.lessonsContainer)
+
+            for (j in 0 until lessonsContainer.childCount) {
+                val lessonView = lessonsContainer.getChildAt(j)
+                val checkBox = lessonView.findViewById<ImageView>(R.id.lessonCheckBox)
+                val lessonLayout = lessonView.findViewById<LinearLayout>(R.id.lessonItemLayout)
+
+                if (isDeleteMode) {
+                    checkBox.visibility = View.VISIBLE
+
+                    // Устанавливаем правильное состояние CheckBox на основе selectedLessons
+                    val lessonName = lessonView.findViewById<TextView>(R.id.lessonName).text.toString()
+                    val lessonTime = lessonView.findViewById<TextView>(R.id.lessonTime).text.toString()
+                    val lessonTeacher = lessonView.findViewById<TextView>(R.id.lessonTeacher).text.toString()
+                    val lessonRoom = lessonView.findViewById<TextView>(R.id.lessonRoom).text.toString()
+                    val currentDay = getCurrentSelectedDay()
+
+                    val isSelected = selectedLessons.any {
+                        it.name == lessonName &&
+                                it.time == lessonTime &&
+                                it.teacher == lessonTeacher &&
+                                it.room == lessonRoom &&
+                                it.day == currentDay
+                    }
+
+                    // Устанавливаем соответствующую иконку
+                    checkBox.setImageResource(if (isSelected) R.drawable.checkbox_checked else R.drawable.checkbox_unchecked)
+
+                    lessonLayout.background = if (isSelected) {
+                        resources.getDrawable(R.drawable.lesson_item_selected)
+                    } else {
+                        resources.getDrawable(R.drawable.lesson_item_background)
+                    }
+
+                } else {
+                    // Обычный режим
+                    checkBox.visibility = View.GONE
+                    lessonLayout.background = resources.getDrawable(R.drawable.lesson_item_background)
+                }
+            }
+        }
+
+        // Обновляем состояние "Выбрать все"
+        updateSelectAllCheckBoxState()
+    }
+    // Переключение выбора пары
+// Переключение выбора пары
+    private fun toggleLessonSelection(lessonView: View) {
+        // ★★★ ПРОВЕРЯЕМ РЕЖИМ, НО НЕ ВЫХОДИМ - ПРОСТО ИГНОРИРУЕМ ★★★
+        if (!isDeleteMode) {
+            println("toggleLessonSelection вызван вне режима удаления - игнорируем")
+            return
+        }
+
+        val checkBox = lessonView.findViewById<ImageView>(R.id.lessonCheckBox)
+        val lessonLayout = lessonView.findViewById<LinearLayout>(R.id.lessonItemLayout)
+
+        val lessonName = lessonView.findViewById<TextView>(R.id.lessonName).text.toString()
+        val lessonTime = lessonView.findViewById<TextView>(R.id.lessonTime).text.toString()
+        val lessonTeacher = lessonView.findViewById<TextView>(R.id.lessonTeacher).text.toString()
+        val lessonRoom = lessonView.findViewById<TextView>(R.id.lessonRoom).text.toString()
+        val currentDay = getCurrentSelectedDay()
+
+        val selectedLesson = SelectedLesson(lessonName, lessonTime, lessonTeacher, lessonRoom, currentDay)
+
+        // Проверяем текущее состояние
+        val isCurrentlySelected = selectedLessons.any {
+            it.name == lessonName &&
+                    it.time == lessonTime &&
+                    it.teacher == lessonTeacher &&
+                    it.room == lessonRoom &&
+                    it.day == currentDay
+        }
+
+        if (isCurrentlySelected) {
+            // Если уже выбрана - убираем
+            selectedLessons.removeAll {
+                it.name == lessonName &&
+                        it.time == lessonTime &&
+                        it.teacher == lessonTeacher &&
+                        it.room == lessonRoom &&
+                        it.day == currentDay
+            }
+            checkBox.setImageResource(R.drawable.checkbox_unchecked)
+            lessonLayout.background = resources.getDrawable(R.drawable.lesson_item_background)
+            println("✗ Убрана пара: $lessonName")
+        } else {
+            // Если не выбрана - добавляем
+            selectedLessons.add(selectedLesson)
+            checkBox.setImageResource(R.drawable.checkbox_checked)
+            lessonLayout.background = resources.getDrawable(R.drawable.lesson_item_selected)
+            println("✓ Добавлена пара: $lessonName")
+        }
+
+        // Обновляем состояние "Выбрать все"
+        updateSelectAllCheckBoxState()
+
+        println("Текущее количество выбранных пар: ${selectedLessons.size}")
+    }
+    private fun updateSelectAllCheckBoxState() {
+        val totalLessonsCount = getTotalLessonsCount()
+
+        if (totalLessonsCount == 0) {
+            selectAllCheckBox.setImageResource(R.drawable.checkbox_unchecked)
+            selectAllCheckBox.isEnabled = false
+            selectAllCheckBox.alpha = 0.5f
+        } else {
+            selectAllCheckBox.isEnabled = true
+            selectAllCheckBox.alpha = 1.0f
+
+            // Устанавливаем соответствующую иконку
+            val isAllSelected = selectedLessons.size == totalLessonsCount
+            selectAllCheckBox.setImageResource(if (isAllSelected) R.drawable.checkbox_checked else R.drawable.checkbox_unchecked)
+        }
+    }
+    // Получение объекта Lesson из View
+    private fun getLessonFromView(lessonView: View): Lesson {
+        val time = lessonView.findViewById<TextView>(R.id.lessonTime).text.toString()
+        val name = lessonView.findViewById<TextView>(R.id.lessonName).text.toString()
+        val room = lessonView.findViewById<TextView>(R.id.lessonRoom).text.toString()
+        val teacher = lessonView.findViewById<TextView>(R.id.lessonTeacher).text.toString()
+        val typeView = lessonView.findViewById<TextView>(R.id.lessonType)
+        val type = typeView.text.toString()
+
+        // Безопасное получение цвета
+        val color = if (typeView.background is ColorDrawable) {
+            (typeView.background as ColorDrawable).color
+        } else {
+            0xFF2196F3.toInt() // Цвет по умолчанию
+        }
+
+        return Lesson(time, name, room, teacher, type, color)
+    }
+    // Удаление выбранных пар
+// Удаление выбранных пар
+    private fun deleteSelectedLessons() {
+        if (selectedLessons.isEmpty()) {
+            Toast.makeText(this, "Выберите хотя бы одну пару", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Показываем подробную информацию о выбранных парах
+        println("=== ВЫБРАНЫ ДЛЯ УДАЛЕНИЯ ===")
+        for ((index, lesson) in selectedLessons.withIndex()) {
+            println("${index + 1}. ${lesson.name}")
+            println("   Время: ${lesson.time}")
+            println("   Преподаватель: ${lesson.teacher}")
+            println("   Аудитория: ${lesson.room}")
+            println("   День: ${lesson.day}")
+            println("   Уникальный ID: ${lesson.name}|${lesson.time}|${lesson.teacher}|${lesson.room}|${lesson.day}")
+        }
+        println("=== КОНЕЦ СПИСКА ===")
+
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Удаление пар")
+            .setMessage("Удалить ${selectedLessons.size} выбранных пар?\n\nБудут удалены только выбранные пары.")
+            .setPositiveButton("Удалить") { dialog, which ->
+                performDeletion()
+            }
+            .setNegativeButton("Отмена", null)
+            .show()
+    }
+    // Выполнение удаления
+
+    // Установка обработчиков на все пары
+    private fun setupLessonClickListeners() {
+        for (i in 0 until scheduleContainer.childCount) {
+            val dayCard = scheduleContainer.getChildAt(i)
+            val lessonsContainer = dayCard.findViewById<LinearLayout>(R.id.lessonsContainer)
+
+            for (j in 0 until lessonsContainer.childCount) {
+                val lessonView = lessonsContainer.getChildAt(j)
+                setupSingleLessonClickListener(lessonView)
+            }
+        }
+    }
+
+    // Установка обработчиков на одну пару
+    private fun setupSingleLessonClickListener(lessonView: View) {
+        // ★★★ УБИРАЕМ ВСЕ СТАРЫЕ ОБРАБОТЧИКИ ★★★
+        lessonView.setOnClickListener(null)
+        lessonView.setOnLongClickListener(null)
+
+        if (!isDeleteMode) {
+            // ★★★ ОБЫЧНЫЙ РЕЖИМ ★★★
+            // Короткое нажатие - редактирование пары
+            lessonView.setOnClickListener {
+                val lesson = getLessonFromView(lessonView)
+                openLessonDetails(lesson)
+            }
+
+            // Долгое нажатие - вход в режим удаления
+            lessonView.setOnLongClickListener {
+                enterDeleteMode(lessonView)
+                return@setOnLongClickListener true
+            }
+        } else {
+            // ★★★ РЕЖИМ УДАЛЕНИЯ ★★★
+            // Короткое нажатие - переключение выделения
+            lessonView.setOnClickListener {
+                toggleLessonSelection(lessonView)
+            }
+
+            // ★★★ В РЕЖИМЕ УДАЛЕНИЯ ДОЛГОЕ НАЖАТИЕ НИЧЕГО НЕ ДЕЛАЕТ ★★★
+            lessonView.setOnLongClickListener {
+                return@setOnLongClickListener true // блокируем долгое нажатие в режиме удаления
+            }
+        }
+    }
+    private fun performDeletion() {
+        val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        val allEntries = sharedPref.all
+
+        var deletedCount = 0
+
+        // Собираем все ключи для удаления
+        val keysToRemove = mutableSetOf<String>()
+
+        // Создаем карту для быстрого поиска пар по уникальному идентификатору
+        val lessonsMap = mutableMapOf<String, MutableList<String>>()
+
+        // Сначала собираем ВСЕ пары для текущего дня
+        val currentDay = getCurrentSelectedDay()
+        for ((key, value) in allEntries) {
+            if (key.endsWith("_day") && value == currentDay) {
+                val lessonId = key.removeSuffix("_day")
+                lessonsMap[lessonId] = mutableListOf()
+            }
+        }
+
+        // Заполняем информацию о каждой паре
+        for (lessonId in lessonsMap.keys) {
+            val name = sharedPref.getString("${lessonId}_name", "") ?: ""
+            val time = sharedPref.getString("${lessonId}_time", "") ?: ""
+            val teacher = sharedPref.getString("${lessonId}_teacher", "") ?: ""
+            val room = sharedPref.getString("${lessonId}_room", "") ?: ""
+
+            // Создаем уникальный ключ для сравнения
+            val uniqueKey = "$name|$time|$teacher|$room"
+            lessonsMap[lessonId] = mutableListOf(uniqueKey, name, time, teacher, room)
+        }
+
+        println("=== НАЧАЛО УДАЛЕНИЯ ===")
+        println("Всего пар в дне $currentDay: ${lessonsMap.size}")
+        println("Выбрано для удаления: ${selectedLessons.size}")
+
+        // Теперь для каждой выбранной пары ищем ВСЕ совпадения
+        for (selectedLesson in selectedLessons) {
+            val selectedUniqueKey = "${selectedLesson.name}|${selectedLesson.time}|${selectedLesson.teacher}|${selectedLesson.room}"
+
+            println("Ищем пару: $selectedUniqueKey")
+            var foundCount = 0
+
+            // Ищем ВСЕ пары с такими же параметрами
+            for ((lessonId, lessonData) in lessonsMap) {
+                if (lessonData.isNotEmpty() && lessonData[0] == selectedUniqueKey) {
+                    // Нашли совпадение - добавляем все ключи этой пары для удаления
+                    keysToRemove.add("${lessonId}_name")
+                    keysToRemove.add("${lessonId}_time")
+                    keysToRemove.add("${lessonId}_teacher")
+                    keysToRemove.add("${lessonId}_room")
+                    keysToRemove.add("${lessonId}_type")
+                    keysToRemove.add("${lessonId}_type_color")
+                    keysToRemove.add("${lessonId}_day")
+
+                    // Удаляем из карты чтобы не обрабатывать повторно
+                    lessonsMap[lessonId] = mutableListOf()
+
+                    foundCount++
+                    deletedCount++
+                    println("✓ Найдено совпадение $foundCount: $lessonId")
+                }
+            }
+
+            if (foundCount == 0) {
+                println("⚠ Не найдено совпадений для: ${selectedLesson.name}")
+            } else {
+                println("✓ Всего найдено совпадений: $foundCount")
+            }
+        }
+
+        // Удаляем все найденные ключи
+        for (key in keysToRemove) {
+            editor.remove(key)
+            println("Удаляем ключ: $key")
+        }
+
+        editor.apply()
+
+        val message = if (deletedCount > 0) "Удалено пар: $deletedCount" else "Пары не найдены для удаления"
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        println("=== УДАЛЕНИЕ ЗАВЕРШЕНО: удалено $deletedCount пар ===")
+
+        exitDeleteMode()
+        refreshCurrentSchedule()
+    }
+    override fun onBackPressed() {
+        println("★ onBackPressed вызван! isDeleteMode = $isDeleteMode")
+
+        if (isDeleteMode) {
+            println("★ Выход из режима удаления через onBackPressed")
+            exitDeleteMode()
+        } else {
+            println("★ Обычный выход из приложения")
+            super.onBackPressed()
+        }
+    }
+    // Метод для поиска оригинального имени пары
+    private fun findOriginalLessonName(lesson: Lesson): String {
+        val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
+        val allEntries = sharedPref.all
+
+        // Ищем запись с таким же временем, преподавателем и аудиторией
+        for ((key, value) in allEntries) {
+            if (key.endsWith("_name") && value == lesson.name) {
+                val lessonId = key.removeSuffix("_name")
+                // Проверяем другие поля для уверенности
+                val savedTime = sharedPref.getString("${lessonId}_time", "")
+                val savedTeacher = sharedPref.getString("${lessonId}_teacher", "")
+                val savedRoom = sharedPref.getString("${lessonId}_room", "")
+
+                if (savedTime == lesson.time && savedTeacher == lesson.teacher && savedRoom == lesson.room) {
+                    return lessonId
+                }
+            }
+        }
+
+        // Если не нашли, возвращаем имя как есть
+        return lesson.name
+    }
 
 }

@@ -97,6 +97,57 @@
         android:weightSum="7">
 
     </LinearLayout>
+    <!-- ЗАМЕНИТЕ существующий deleteModeLayout на этот -->
+    <LinearLayout
+        android:id="@+id/deleteModeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFEBEE"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        android:visibility="gone">
+
+        <!-- ЗАМЕНИТЕ весь блок с "Выбрать все" на этот -->
+        <LinearLayout
+            android:id="@+id/selectAllLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginEnd="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground">
+
+            <ImageView
+                android:id="@+id/selectAllCheckBox"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/checkbox_unchecked"
+                android:layout_marginEnd="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Выбрать все"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <!-- Кнопка удаления -->
+        <Button
+            android:id="@+id/deleteSelectedButton"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:text="🗑️ Удалить"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/delete_button_red" />
+
+    </LinearLayout>
 
     <!-- Контейнер для расписания -->
     <ScrollView

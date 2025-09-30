@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/lessonItemLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
@@ -9,6 +10,16 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground">
+
+    <!-- ЗАМЕНЯЕМ CheckBox на ImageView -->
+    <ImageView
+        android:id="@+id/lessonCheckBox"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="8dp"
+        android:visibility="gone"
+        android:src="@drawable/checkbox_unchecked"
+        android:scaleType="centerInside" />
 
     <TextView
         android:id="@+id/lessonTime"
