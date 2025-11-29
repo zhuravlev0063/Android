@@ -4,21 +4,28 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Button
-import android.widget.ImageButton // <-- Добавлено
+import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.androiddd.data.models.Lesson // <-- Добавлено
-import com.example.androiddd.data.repository.ScheduleRepository // <-- Добавлено (если уже создан)
+import com.example.androiddd.data.models.Lesson
+import com.example.androiddd.data.repository.ScheduleRepository
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import java.util.*
+import com.example.androiddd.data.repository.AuthRepository
+import android.widget.PopupMenu
+import android.view.MenuInflater
+import android.view.View
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var authRepository: AuthRepository
     private lateinit var daysContainer: LinearLayout
     private lateinit var scheduleContainer: LinearLayout
     private lateinit var prevWeekBtn: Button
     private lateinit var nextWeekBtn: Button
     private lateinit var weekRangeText: TextView
     private lateinit var weekTypeText: TextView
+    private lateinit var menuButton: ImageButton
     private var selectedDayButton: LinearLayout? = null
     private var currentWeekOffset = 0
     private var todayDayName: String = "Понедельник"
@@ -110,9 +117,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        authRepository = AuthRepository(this)
+        if (!authRepository.isLoggedIn()) {
+            // Если нет, перенаправьте на LoginActivity
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+            finish() // Закройте MainActivity, чтобы пользователь не мог вернуться назад на него без входа
+            return // Прервите выполнение onCreate
+        }
+        menuButton = findViewById(R.id.menuButton)
+        menuButton.setOnClickListener {
+            showPopupMenu(it) // Передаем View (кнопку), к которой нужно прикрепить меню
+        }
         daysContainer = findViewById(R.id.daysContainer)
         scheduleContainer = findViewById(R.id.scheduleContainer)
         prevWeekBtn = findViewById(R.id.prevWeekBtn)
@@ -124,6 +144,28 @@ class MainActivity : AppCompatActivity() {
         setupWeekNavigation()
         setupDayButtons()
         showTodaySchedule()
+    }
+    private fun showPopupMenu(view: View) {
+        val popup = PopupMenu(this, view)
+        val inflater: MenuInflater = popup.menuInflater
+        inflater.inflate(R.menu.main_menu, popup.menu) // Используем тот же файл меню
+
+        popup.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_logout -> {
+                    // Выход из аккаунта
+                    authRepository.logout() // Очищаем данные пользователя
+                    val intent = Intent(this, LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK // Очищаем стек активностей
+                    startActivity(intent)
+                    finish() // Закрываем MainActivity
+                    true
+                }
+                else -> false
+            }
+        }
+
+        popup.show()
     }
     private fun determineCurrentDay() {
         val calendar = Calendar.getInstance()
@@ -417,16 +459,15 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    // НОВЫЙ МЕТОД: Сохранить новую пару
     private fun addNewLesson(dayName: String, lessonTime: String, lessonName: String, lessonTeacher: String, lessonRoom: String, lessonType: String) {
         val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
         val editor = sharedPref.edit()
 
-        // Генерируем уникальное имя для новой пары: день_время (или просто время, если день уникален)
-        // Лучше использовать день_время как уникальный ключ для сохранения
-        val uniqueName = "${dayName}_${lessonTime}"
+        // Генерируем действительно уникальный идентификатор
+        val uniqueId = java.util.UUID.randomUUID().toString()
+        val uniqueName = "${dayName}_${lessonTime}_$uniqueId" // Комбинируем день, время и UUID
 
-        // Сохраняем данные новой пары под уникальным ключом (имя_время)
+        // Сохраняем данные новой пары под уникальным ключом (имя_время_uuid)
         editor.putString("${uniqueName}_name", lessonName)
         editor.putString("${uniqueName}_time", lessonTime)
         editor.putString("${uniqueName}_teacher", lessonTeacher)
@@ -435,14 +476,12 @@ class MainActivity : AppCompatActivity() {
         editor.putInt("${uniqueName}_type_color", 0xFF2196F3.toInt()) // Цвет по умолчанию
 
         // Добавляем новую пару в список для дня
-        addToUserAddedLessonsForDay(editor, dayName, lessonTime, lessonName, lessonTeacher, lessonRoom, lessonType, 0xFF2196F3.toInt())
+        addToUserAddedLessonsForDay(editor, dayName, lessonTime, lessonName, lessonTeacher, lessonRoom, lessonType, 0xFF2196F3.toInt(), uniqueId) // Передаем uniqueId
 
         editor.apply()
         refreshCurrentSchedule()
     }
-
-    // Метод для добавления новой пары в JSON-список для дня
-    private fun addToUserAddedLessonsForDay(editor: android.content.SharedPreferences.Editor, dayName: String, lessonTime: String, lessonName: String, lessonTeacher: String, lessonRoom: String, lessonType: String, lessonTypeColor: Int) {
+    private fun addToUserAddedLessonsForDay(editor: android.content.SharedPreferences.Editor, dayName: String, lessonTime: String, lessonName: String, lessonTeacher: String, lessonRoom: String, lessonType: String, lessonTypeColor: Int, uniqueId: String) {
         val key = "user_added_lessons_$dayName"
         val currentJsonString = getSharedPreferences("lesson_data", MODE_PRIVATE).getString(key, "[]") ?: "[]"
         val jsonArray = try {
@@ -450,7 +489,6 @@ class MainActivity : AppCompatActivity() {
         } catch (e: Exception) {
             org.json.JSONArray() // Если строка повреждена, начинаем с пустого массива
         }
-
         val lessonJson = org.json.JSONObject().apply {
             put("name", lessonName)
             put("time", lessonTime)
@@ -458,12 +496,11 @@ class MainActivity : AppCompatActivity() {
             put("room", lessonRoom)
             put("type", lessonType)
             put("typeColor", lessonTypeColor)
+            put("uniqueId", uniqueId) // Добавляем уникальный ID
         }
         jsonArray.put(lessonJson)
-
         editor.putString(key, jsonArray.toString())
     }
-
     private fun openLessonDetails(lesson: Lesson) {
         // Берем сохраненные данные
         // Используем ключ name_time для получения данных
@@ -487,28 +524,22 @@ class MainActivity : AppCompatActivity() {
         }
         startActivityForResult(intent, LESSON_DETAIL_REQUEST_CODE)
     }
-
-    // ... (остальные методы без изменений до onActivityResult)
-
-    // НОВЫЕ МЕТОДЫ ДЛЯ РАБОТЫ С ПОЛЬЗОВАТЕЛЬСКИМИ ПАРАМИ
-
-    // Метод для получения данных СУЩЕСТВУЮЩЕЙ пары (используется для редактирования и отображения)
-    // Обновлен: принимает name и time
     private fun getSavedLessonData(originalName: String, originalTime: String, field: String, defaultValue: String): String {
         val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
-        val key = "${originalName}_${originalTime}_$field" // <-- Ключ: имя_время_поле
+        // Заменяем пробелы и двоеточия на подчеркивание
+        val safeOriginalName = originalName.replace(" ", "_").replace(":", "_").replace("-", "_")
+        val safeOriginalTime = originalTime.replace(" ", "_").replace(":", "_").replace("-", "_")
+        val key = "${safeOriginalName}_${safeOriginalTime}_$field"
         return sharedPref.getString(key, defaultValue) ?: defaultValue
     }
-
-    // Метод для получения цвета СУЩЕСТВУЮЩЕЙ пары
-    // Обновлен: принимает name и time
     private fun getSavedLessonColor(originalName: String, originalTime: String, field: String, defaultValue: Int): Int {
         val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
-        val key = "${originalName}_${originalTime}_$field" // <-- Ключ: имя_время_поле
+        // Заменяем пробелы и двоеточия на подчеркивание
+        val safeOriginalName = originalName.replace(" ", "_").replace(":", "_").replace("-", "_")
+        val safeOriginalTime = originalTime.replace(" ", "_").replace(":", "_").replace("-", "_")
+        val key = "${safeOriginalName}_${safeOriginalTime}_$field"
         return sharedPref.getInt(key, defaultValue)
     }
-
-    // Метод для получения списка добавленных пользователем пар для конкретного дня
     private fun getUserAddedLessonsForDay(dayName: String): List<Lesson> {
         val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
         val key = "user_added_lessons_$dayName" // <-- Ключ для списка пар дня

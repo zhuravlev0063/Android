@@ -1,0 +1,67 @@
+<resources>
+    <string name="app_name">My Schedule</string>
+    <!-- Lesson Types -->
+    <string name="lesson_type_lecture">Lecture</string>
+    <string name="lesson_type_practical">Practical</string>
+    <string name="lesson_type_lab">Lab</string>
+    <string name="lesson_type_seminar">Seminar</string>
+    <string name="lesson_type_consultation">Consultation</string>
+    <string name="lesson_type_extra">Extra Class</string>
+    <!-- Messages -->
+    <string name="error_invalid_color_format">Invalid color format</string>
+    <string name="error_enter_color_format">Enter color in #RRGGBB format</string>
+    <string name="dialog_title_save">Save</string>
+    <string name="dialog_message_save">Save changes?</string>
+    <string name="dialog_button_save">Save</string>
+    <string name="dialog_button_discard">Discard</string>
+    <string name="dialog_button_cancel">Cancel</string>
+    <string name="dialog_button_done">Done</string>
+    <string name="dialog_button_add">Add</string>
+    <string name="dialog_button_close">Close</string>
+    <string name="empty_schedule_message_default">📚 No lessons this week</string>
+    <string name="empty_schedule_message_sunday">🎉 Sunday is a day off!</string>
+    <string name="error_blank_fields">Please fill in all fields.</string>
+    <string name="menu_logout">Logout</string>
+    <!-- Input Field Labels -->
+    <string name="label_lesson_name">Name:</string>
+    <string name="label_lesson_time">Time:</string>
+    <string name="label_lesson_teacher">Teacher:</string>
+    <string name="label_lesson_room">Room:</string>
+    <string name="label_lesson_type">Type:</string>
+    <string name="label_lesson_color">Color:</string>
+    <!-- Default Values -->
+    <string name="default_new_lesson_name">New Subject</string>
+    <string name="default_new_lesson_time">00:00-00:00</string>
+    <string name="default_new_lesson_teacher">Teacher</string>
+    <string name="default_new_lesson_room">Room</string>
+    <!-- Days of the Week -->
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+    <string name="day_sunday">Sunday</string>
+    <!-- Short Days of the Week -->
+    <string name="day_short_monday">Mo</string>
+    <string name="day_short_tuesday">Tu</string>
+    <string name="day_short_wednesday">We</string>
+    <string name="day_short_thursday">Th</string>
+    <string name="day_short_friday">Fr</string>
+    <string name="day_short_saturday">Sa</string>
+    <string name="day_short_sunday">Su</string>
+    <!-- Buttons -->
+    <string name="button_add_lesson">+</string>
+    <string name="button_save">Save</string>
+    <string name="button_edit">Edit</string>
+    <string name="button_delete">Delete</string>
+    <string name="button_prev_week">Prev</string>
+    <string name="button_next_week">Next</string>
+    <string name="button_today">Today</string>
+    <!-- Navigation -->
+    <string name="navigation_week_type_numerator">(numerator)</string>
+    <string name="navigation_week_type_denominator">(denominator)</string>
+    <!-- Text on Lesson Card -->
+    <string name="lesson_card_week_type_numerator">num</string>
+    <string name="lesson_card_week_type_denominator">den</string>
+</resources>

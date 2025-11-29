@@ -1,3 +1,67 @@
 <resources>
-    <string name="app_name">Androiklddd</string>
+    <string name="app_name">Моё Расписание</string>
+    <!-- Типы пар -->
+    <string name="lesson_type_lecture">Лекция</string>
+    <string name="lesson_type_practical">П/З</string>
+    <string name="lesson_type_lab">Лаб</string>
+    <string name="lesson_type_seminar">Семинар</string>
+    <string name="lesson_type_consultation">Консультация</string>
+    <string name="lesson_type_extra">Доп занятие</string>
+    <!-- Сообщения -->
+    <string name="error_invalid_color_format">Неверный формат цвета</string>
+    <string name="error_enter_color_format">Введите цвет в формате #RRGGBB</string>
+    <string name="dialog_title_save">Сохранение</string>
+    <string name="dialog_message_save">Сохранить изменения?</string>
+    <string name="dialog_button_save">Сохранить</string>
+    <string name="dialog_button_discard">Не сохранять</string>
+    <string name="dialog_button_cancel">Отмена</string>
+    <string name="dialog_button_done">Готово</string>
+    <string name="dialog_button_add">Добавить</string>
+    <string name="dialog_button_close">Закрыть</string>
+    <string name="empty_schedule_message_default">📚 На этой неделе пар нет</string>
+    <string name="empty_schedule_message_sunday">🎉 Воскресенье - выходной день!</string>
+    <string name="error_blank_fields">Пожалуйста, заполните все поля.</string>
+    <string name="menu_logout">Выйти</string>
+    <!-- Заголовки полей ввода -->
+    <string name="label_lesson_name">Название:</string>
+    <string name="label_lesson_time">Время:</string>
+    <string name="label_lesson_teacher">Преподаватель:</string>
+    <string name="label_lesson_room">Аудитория:</string>
+    <string name="label_lesson_type">Тип:</string>
+    <string name="label_lesson_color">Цвет:</string>
+    <!-- Значения по умолчанию -->
+    <string name="default_new_lesson_name">Новая дисциплина</string>
+    <string name="default_new_lesson_time">00:00-00:00</string>
+    <string name="default_new_lesson_teacher">Преподаватель</string>
+    <string name="default_new_lesson_room">Ауд.</string>
+    <!-- Дни недели -->
+    <string name="day_monday">Понедельник</string>
+    <string name="day_tuesday">Вторник</string>
+    <string name="day_wednesday">Среда</string>
+    <string name="day_thursday">Четверг</string>
+    <string name="day_friday">Пятница</string>
+    <string name="day_saturday">Суббота</string>
+    <string name="day_sunday">Воскресенье</string>
+    <!-- Сокращения дней недели -->
+    <string name="day_short_monday">ПН</string>
+    <string name="day_short_tuesday">ВТ</string>
+    <string name="day_short_wednesday">СР</string>
+    <string name="day_short_thursday">ЧТ</string>
+    <string name="day_short_friday">ПТ</string>
+    <string name="day_short_saturday">СБ</string>
+    <string name="day_short_sunday">ВС</string>
+    <!-- Кнопки -->
+    <string name="button_add_lesson">+</string>
+    <string name="button_save">Сохранить</string>
+    <string name="button_edit">Редактировать</string>
+    <string name="button_delete">Удалить</string>
+    <string name="button_prev_week">Пред.</string>
+    <string name="button_next_week">След.</string>
+    <string name="button_today">Сегодня</string>
+    <!-- Навигация -->
+    <string name="navigation_week_type_numerator">(числитель)</string>
+    <string name="navigation_week_type_denominator">(знаменатель)</string>
+    <!-- Текст на карточке пары -->
+    <string name="lesson_card_week_type_numerator">числ</string>
+    <string name="lesson_card_week_type_denominator">знам</string>
 </resources>

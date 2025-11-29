@@ -1,0 +1,38 @@
+<!-- File: app/src/main/res/values-night/themes.xml -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Основная темная тема -->
+    <style name="Theme.Androiddd" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Основной акцентный цвет -->
+        <item name="colorPrimary">#90CAF9</item> <!-- Светло-синий -->
+        <!-- Вторичный акцентный цвет -->
+        <item name="colorSecondary">#A5D6A7</item> <!-- Светло-зеленый -->
+
+        <!-- Цвета для "поверхностей" (фоны карточек, EditText и т.д.) -->
+        <item name="colorSurface">#424242</item> <!-- Темно-серый фон -->
+        <item name="colorOnSurface">#E0E0E0</item> <!-- Светлый текст на темном фоне -->
+
+        <!-- Цвета для элементов управления (EditText, Switch и т.д.) -->
+        <item name="colorControlNormal">#BDBDBD</item> <!-- Светлые иконки и подчеркивание в неактивном состоянии -->
+        <item name="colorControlActivated">#90CAF9</item> <!-- Цвет активного элемента (фокус, выделение) -->
+        <item name="colorControlHighlight">#4490CAF9</item> <!-- Цвет эффекта ripple -->
+
+        <!-- Цвета для первичного и вторичного текста -->
+        <item name="android:textColorPrimary">#E0E0E0</item> <!-- Основной текст -->
+        <item name="android:textColorSecondary">#BDBDBD</item> <!-- Вторичный текст -->
+
+        <!-- Цвет фона строки состояния -->
+        <item name="android:statusBarColor">#1E1E1E</item> <!-- Темный фон строки состояния -->
+        <!-- Цвет иконок в строке состояния (true - темные, false - светлые) -->
+        <item name="android:windowLightStatusBar">false</item> <!-- Иконки светлые на темном фоне -->
+        <!-- Цвет фона окна -->
+        <item name="android:windowBackground">#303030</item> <!-- Темно-серый фон окна -->
+    </style>
+
+    <!-- Тема для SplashScreen -->
+    <style name="Theme.Androiddd.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#1E1E1E</item> <!-- Темный фон для сплеш-экрана -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="postSplashScreenTheme">@style/Theme.Androiddd</item>
+    </style>
+</resources>

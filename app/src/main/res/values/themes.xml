@@ -1,24 +1,38 @@
+<!-- File: app/src/main/res/values/themes.xml -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Androiddd" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <item name="colorPrimary">@color/purple_500</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+    <!-- Основная светлая тема -->
+    <style name="Theme.Androiddd" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Основной акцентный цвет -->
+        <item name="colorPrimary">#1565C0</item> <!-- Темно-синий -->
+        <!-- Вторичный акцентный цвет -->
+        <item name="colorSecondary">#4CAF50</item> <!-- Зеленый -->
+
+        <!-- Цвета для "поверхностей" (фоны карточек, EditText и т.д.) -->
+        <item name="colorSurface">#FFFFFF</item> <!-- Белый фон -->
+        <item name="colorOnSurface">#333333</item> <!-- Темный текст на светлом фоне -->
+
+        <!-- Цвета для элементов управления (EditText, Switch и т.д.) -->
+        <item name="colorControlNormal">#666666</item> <!-- Цвет иконок и подчеркивания в неактивном состоянии -->
+        <item name="colorControlActivated">#1565C0</item> <!-- Цвет активного элемента (фокус, выделение) -->
+        <item name="colorControlHighlight">#441565C0</item> <!-- Цвет эффекта ripple -->
+
+        <!-- Цвета для первичного и вторичного текста -->
+        <item name="android:textColorPrimary">#333333</item> <!-- Основной текст -->
+        <item name="android:textColorSecondary">#666666</item> <!-- Вторичный текст -->
+
+        <!-- Цвет фона строки состояния -->
+        <item name="android:statusBarColor">#1565C0</item>
+        <!-- Цвет иконок в строке состояния (true - темные, false - светлые) -->
+        <item name="android:windowLightStatusBar">true</item> <!-- Иконки темные на светлом фоне -->
+        <!-- Цвет фона окна -->
+        <item name="android:windowBackground">#FFFFFF</item>
     </style>
 
-    <style name="Theme.Androiddd" parent="Base.Theme.Androiddd" />
-
-    <!-- Custom Dialog Theme -->
-    <style name="CustomDialogTheme" parent="Theme.AppCompat.Light.Dialog">
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="android:backgroundDimAmount">0.5</item>
-        <item name="android:windowIsFloating">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+    <!-- Тема для SplashScreen -->
+    <style name="Theme.Androiddd.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#1565C0</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="windowSplashScreenAnimationDuration">300</item>
+        <item name="postSplashScreenTheme">@style/Theme.Androiddd</item>
     </style>
 </resources>

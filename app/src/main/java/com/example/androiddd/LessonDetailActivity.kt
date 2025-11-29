@@ -3,7 +3,7 @@ package com.example.androiddd
 import android.app.AlertDialog
 import android.graphics.drawable.GradientDrawable
 import android.content.Intent
-import android.graphics.Color // <-- Добавлено
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,11 +11,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.example.androiddd.utils.dpToPx // <-- Добавлено (если extension функция перенесена)
+import com.example.androiddd.utils.dpToPx
 
 class LessonDetailActivity : AppCompatActivity() {
     private var originalLessonName: String = ""
-    private var originalLessonTime: String = "" // <-- Добавлено
+    private var originalLessonTime: String = ""
     private var originalLessonTeacher: String = ""
     private var originalLessonRoom: String = ""
     private var originalLessonType: String = ""
@@ -410,26 +410,27 @@ class LessonDetailActivity : AppCompatActivity() {
             val editor = sharedPref.edit()
 
             if (isNewLesson && dayNameForNewLesson.isNotEmpty()) {
-                // Сохраняем новую пару под ключом, связанным с днём недели (для списка)
-                // Также сохраняем её данные под уникальным ключом имя_время
-                val uniqueName = newName // Для новой пары, имя + время будет уникальным ключом
-                editor.putString("${uniqueName}_${newTime}_name", newName)
-                editor.putString("${uniqueName}_${newTime}_time", newTime)
-                editor.putString("${uniqueName}_${newTime}_teacher", newTeacher)
-                editor.putString("${uniqueName}_${newTime}_room", newRoom)
-                editor.putString("${uniqueName}_${newTime}_type", currentLessonType)
-                editor.putInt("${uniqueName}_${newTime}_type_color", currentLessonTypeColor)
+                // Заменяем пробелы и двоеточия на подчеркивание для новой пары
+                val safeNewName = newName.replace(" ", "_").replace(":", "_").replace("-", "_")
+                val safeNewTime = newTime.replace(" ", "_").replace(":", "_").replace("-", "_")
+                editor.putString("${safeNewName}_${safeNewTime}_name", newName)
+                editor.putString("${safeNewName}_${safeNewTime}_time", newTime)
+                editor.putString("${safeNewName}_${safeNewTime}_teacher", newTeacher)
+                editor.putString("${safeNewName}_${safeNewTime}_room", newRoom)
+                editor.putString("${safeNewName}_${safeNewTime}_type", currentLessonType)
+                editor.putInt("${safeNewName}_${safeNewTime}_type_color", currentLessonTypeColor)
 
                 // Добавляем новую пару в список для дня
                 addToUserAddedLessonsForDay(dayNameForNewLesson, newTime, newName, newTeacher, newRoom, currentLessonType, currentLessonTypeColor)
             } else {
-                // Обновляем существующую пару под старым ключом (имя_время)
-                editor.putString("${originalLessonName}_${originalLessonTime}_name", newName)
-                editor.putString("${originalLessonName}_${originalLessonTime}_time", newTime)
-                editor.putString("${originalLessonName}_${originalLessonTime}_teacher", newTeacher)
-                editor.putString("${originalLessonName}_${originalLessonTime}_room", newRoom)
-                editor.putString("${originalLessonName}_${originalLessonTime}_type", currentLessonType)
-                editor.putInt("${originalLessonName}_${originalLessonTime}_type_color", currentLessonTypeColor)
+                val safeOriginalName = originalLessonName.replace(" ", "_").replace(":", "_").replace("-", "_")
+                val safeOriginalTime = originalLessonTime.replace(" ", "_").replace(":", "_").replace("-", "_")
+                editor.putString("${safeOriginalName}_${safeOriginalTime}_name", newName)
+                editor.putString("${safeOriginalName}_${safeOriginalTime}_time", newTime)
+                editor.putString("${safeOriginalName}_${safeOriginalTime}_teacher", newTeacher)
+                editor.putString("${safeOriginalName}_${safeOriginalTime}_room", newRoom)
+                editor.putString("${safeOriginalName}_${safeOriginalTime}_type", currentLessonType)
+                editor.putInt("${safeOriginalName}_${safeOriginalTime}_type_color", currentLessonTypeColor)
             }
             editor.apply()
 
@@ -440,10 +441,8 @@ class LessonDetailActivity : AppCompatActivity() {
                 putExtra("UPDATED_LESSON_ROOM", newRoom)
                 putExtra("UPDATED_LESSON_TYPE", currentLessonType)
                 putExtra("UPDATED_LESSON_TYPE_COLOR", currentLessonTypeColor)
-                // Передаём день и признак новой пары
                 putExtra(MainActivity.EXTRA_DAY_NAME, if (isNewLesson) dayNameForNewLesson else null)
                 putExtra(MainActivity.EXTRA_IS_NEW_LESSON, isNewLesson)
-                // Передаём оригинальные данные, если это редактирование
                 if (!isNewLesson) {
                     putExtra("ORIGINAL_LESSON_NAME", originalLessonName)
                     putExtra("ORIGINAL_LESSON_TIME", originalLessonTime)

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Общие отступы -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="section_padding">16dp</dimen>
+    <dimen name="item_margin_vertical">8dp</dimen>
+    <dimen name="item_margin_horizontal">8dp</dimen>
+
+    <!-- Размеры элементов UI -->
+    <dimen name="lesson_card_corner_radius">8dp</dimen>
+    <dimen name="lesson_card_elevation">4dp</dimen>
+    <dimen name="lesson_card_margin_bottom">8dp</dimen>
+    <dimen name="lesson_item_padding">12dp</dimen>
+    <dimen name="lesson_item_margin_bottom">4dp</dimen>
+    <dimen name="lesson_time_width">70dp</dimen>
+    <dimen name="lesson_type_padding">6dp</dimen>
+    <dimen name="lesson_type_corner_radius">24dp</dimen>
+
+    <dimen name="day_button_size_width">56dp</dimen>
+    <dimen name="day_button_size_height">64dp</dimen>
+    <dimen name="day_button_corner_radius">8dp</dimen>
+    <dimen name="day_button_margin_end">4dp</dimen>
+    <dimen name="day_button_text_size">12sp</dimen>
+    <dimen name="day_button_date_size">14sp</dimen>
+
+    <dimen name="week_navigation_height">56dp</dimen>
+    <dimen name="week_navigation_button_width">64dp</dimen>
+    <dimen name="week_navigation_text_size">14sp</dimen>
+
+    <dimen name="menu_button_size">48dp</dimen>
+    <dimen name="menu_button_margin">16dp</dimen>
+
+    <!-- Размеры в LessonDetailActivity -->
+    <dimen name="lesson_detail_input_padding">12dp</dimen>
+    <dimen name="lesson_detail_input_margin_bottom">12dp</dimen>
+    <dimen name="lesson_detail_label_text_size">14sp</dimen>
+    <dimen name="lesson_detail_input_text_size">16sp</dimen>
+    <dimen name="lesson_detail_spinner_height">48dp</dimen>
+    <dimen name="lesson_detail_color_button_size">2dp</dimen>
+    <dimen name="lesson_detail_color_button_size_1dp">1dp</dimen>
+    <dimen name="lesson_detail_color_button_margin">6dp</dimen>
+    <dimen name="lesson_detail_save_button_size">48dp</dimen>
+    <dimen name="lesson_detail_save_button_margin">16dp</dimen>
+
+    <!-- Размеры в диалогах -->
+    <dimen name="dialog_padding">24dp</dimen>
+    <dimen name="dialog_button_height">48dp</dimen>
+    <dimen name="dialog_button_margin">8dp</dimen>
+    <dimen name="dialog_color_button_size">20dp</dimen>
+    <dimen name="dialog_color_button_margin">1dp</dimen>
+    <dimen name="dialog_hex_input_height">48dp</dimen>
+    <dimen name="dialog_hex_input_margin_bottom">16dp</dimen>
+    <dimen name="dialog_rgb_input_height">40dp</dimen>
+    <dimen name="dialog_rgb_input_width">80dp</dimen>
+    <dimen name="dialog_rgb_input_margin">4dp</dimen>
+    <dimen name="dialog_color_preview_size">48dp</dimen>
+    <dimen name="dialog_color_preview_margin_bottom">16dp</dimen>
+
+    <!-- Размеры в диалоге добавления -->
+    <dimen name="dialog_add_lesson_button_height">48dp</dimen>
+    <dimen name="dialog_add_lesson_button_margin">8dp</dimen>
+
+    <!-- Размеры шрифтов -->
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_large">16sp</dimen>
+    <dimen name="text_size_xlarge">18sp</dimen>
+    <dimen name="text_size_title">20sp</dimen>
+    <dimen name="text_size_header">24sp</dimen>
+
+    <!-- Размеры для пустого списка -->
+    <dimen name="empty_list_text_size">18sp</dimen>
+    <dimen name="empty_list_padding_vertical">60dp</dimen>
+</resources>

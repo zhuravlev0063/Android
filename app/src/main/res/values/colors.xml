@@ -1,10 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- Основные цвета темы -->
+    <color name="colorPrimary">#1565C0</color> <!-- Темно-синий -->
+    <color name="colorPrimaryVariant">#00399B</color> <!-- Более темный оттенок -->
+    <color name="colorOnPrimary">#FFFFFF</color> <!-- Белый на первичном фоне -->
+
+    <color name="colorSecondary">#4CAF50</color> <!-- Зеленый -->
+    <color name="colorSecondaryVariant">#2E7D32</color> <!-- Более темный оттенок -->
+    <color name="colorOnSecondary">#FFFFFF</color> <!-- Белый на вторичном фоне -->
+
+    <color name="colorSurface">#FFFFFF</color> <!-- Белый фон карточек и т.д. -->
+    <color name="colorOnSurface">#333333</color> <!-- Темный текст на светлом фоне -->
+
+    <color name="colorBackground">#F5F5F5</color> <!-- Светло-серый фон окна -->
+    <color name="colorOnBackground">#000000</color> <!-- Черный текст на фоне -->
+
+    <!-- Цвета для типа пары -->
+    <color name="lesson_type_lecture">#2196F3</color> <!-- Синий -->
+    <color name="lesson_type_practical">#4CAF50</color> <!-- Зеленый -->
+    <color name="lesson_type_lab">#FF5722</color> <!-- Оранжевый -->
+    <color name="lesson_type_seminar">#9C27B0</color> <!-- Фиолетовый -->
+    <color name="lesson_type_consultation">#FF9800</color> <!-- Оранжевый -->
+    <color name="lesson_type_extra">#607D8B</color> <!-- Сине-серый -->
+
+    <!-- Вспомогательные цвета -->
+    <color name="colorError">#B00020</color> <!-- Красный для ошибок -->
+    <color name="colorOnSurfaceVariant">#666666</color> <!-- Вторичный текст -->
+    <color name="colorSurfaceVariant">#E0E0E0</color> <!-- Подчеркивание в EditText -->
+    <color name="colorOutline">#CCCCCC</color> <!-- Обводка кнопок и т.д. -->
+
+    <!-- Цвета для пустого списка -->
+    <color name="empty_list_text_color">#666666</color>
+
+    <!-- Цвета для навигации по неделям -->
+    <color name="week_navigation_text_default">#FFFFFF</color>
+    <color name="week_navigation_text_current">#FFFF00</color> <!-- Желтый для "сегодня" -->
+
+    <!-- Цвета для кнопок дней -->
+    <color name="day_button_background">#E0E0E0</color>
+    <color name="day_button_selected">#BBDEFB</color> <!-- Светло-синий -->
+    <color name="day_button_text">#333333</color>
+    <color name="day_button_text_selected">#000000</color>
+
+    <!-- Цвета для иконки меню -->
+    <color name="menu_icon_color">#333333</color>
+
+    <!-- Цвета для спиннера -->
+    <color name="spinner_background">#FFFFFF</color>
+    <color name="spinner_text">#333333</color>
+
+    <!-- Цвета для диалогов -->
+    <color name="dialog_background">#FFFFFF</color>
+    <color name="dialog_button_text">#1565C0</color>
 </resources>

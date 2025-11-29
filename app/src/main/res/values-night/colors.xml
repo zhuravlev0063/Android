@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Основные цвета темы (Темная) -->
+    <color name="colorPrimary">#90CAF9</color> <!-- Светло-синий -->
+    <color name="colorPrimaryVariant">#5698F3</color> <!-- Более светлый оттенок -->
+    <color name="colorOnPrimary">#000000</color> <!-- Черный на первичном фоне -->
+
+    <color name="colorSecondary">#A5D6A7</color> <!-- Светло-зеленый -->
+    <color name="colorSecondaryVariant">#75A87A</color> <!-- Более светлый оттенок -->
+    <color name="colorOnSecondary">#000000</color> <!-- Черный на вторичном фоне -->
+
+    <color name="colorSurface">#424242</color> <!-- Темно-серый фон карточек и т.д. -->
+    <color name="colorOnSurface">#E0E0E0</color> <!-- Светлый текст на темном фоне -->
+
+    <color name="colorBackground">#121212</color> <!-- Очень темный фон окна -->
+    <color name="colorOnBackground">#FFFFFF</color> <!-- Белый текст на фоне -->
+
+    <!-- Цвета для типа пары остаются теми же, но могут быть скорректированы для лучшей видимости в темной теме -->
+    <!-- Например, сделать их немного светлее -->
+    <color name="lesson_type_lecture">#64B5F6</color> <!-- Светлее -->
+    <color name="lesson_type_practical">#81C784</color>
+    <color name="lesson_type_lab">#FF8A65</color>
+    <color name="lesson_type_seminar">#BA68C8</color>
+    <color name="lesson_type_consultation">#FFB74D</color>
+    <color name="lesson_type_extra">#90A4AE</color>
+
+    <!-- Вспомогательные цвета (Темная) -->
+    <color name="colorError">#CF6679</color> <!-- Светлее красный для ошибок -->
+    <color name="colorOnSurfaceVariant">#BDBDBD</color> <!-- Вторичный текст -->
+    <color name="colorSurfaceVariant">#757575</color> <!-- Подчеркивание в EditText -->
+    <color name="colorOutline">#424242</color> <!-- Обводка кнопок и т.д. -->
+
+    <!-- Цвета для пустого списка -->
+    <color name="empty_list_text_color">#BDBDBD</color>
+
+    <!-- Цвета для навигации по неделям -->
+    <color name="week_navigation_text_default">#BDBDBD</color>
+    <color name="week_navigation_text_current">#FFFF00</color> <!-- Желтый сохраняется -->
+
+    <!-- Цвета для кнопок дней -->
+    <color name="day_button_background">#616161</color>
+    <color name="day_button_selected">#90CAF9</color> <!-- Светло-синий -->
+    <color name="day_button_text">#E0E0E0</color>
+    <color name="day_button_text_selected">#000000</color>
+
+    <!-- Цвета для иконки меню -->
+    <color name="menu_icon_color">#E0E0E0</color>
+
+    <!-- Цвета для спиннера -->
+    <color name="spinner_background">#424242</color>
+    <color name="spinner_text">#E0E0E0</color>
+
+    <!-- Цвета для диалогов -->
+    <color name="dialog_background">#424242</color>
+    <color name="dialog_button_text">#90CAF9</color>
+</resources>
