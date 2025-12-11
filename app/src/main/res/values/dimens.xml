@@ -32,8 +32,11 @@
     <dimen name="menu_button_margin">16dp</dimen>
 
     <!-- Размеры в LessonDetailActivity -->
+    <dimen name="lesson_detail_0dp">0dp</dimen>
+    <dimen name="lesson_detail_8dp">8dp</dimen>
     <dimen name="lesson_detail_input_padding">12dp</dimen>
     <dimen name="lesson_detail_input_margin_bottom">12dp</dimen>
+    <dimen name="lesson_detail_input_margin_bottom_20dp">20dp</dimen>
     <dimen name="lesson_detail_label_text_size">14sp</dimen>
     <dimen name="lesson_detail_input_text_size">16sp</dimen>
     <dimen name="lesson_detail_spinner_height">48dp</dimen>
@@ -55,6 +58,7 @@
     <dimen name="dialog_rgb_input_width">80dp</dimen>
     <dimen name="dialog_rgb_input_margin">4dp</dimen>
     <dimen name="dialog_color_preview_size">48dp</dimen>
+    <dimen name="dialog_color_preview_size_44">44dp</dimen>
     <dimen name="dialog_color_preview_margin_bottom">16dp</dimen>
 
     <!-- Размеры в диалоге добавления -->
@@ -68,6 +72,7 @@
     <dimen name="text_size_xlarge">18sp</dimen>
     <dimen name="text_size_title">20sp</dimen>
     <dimen name="text_size_header">24sp</dimen>
+    <dimen name="text_size_sup_header">30sp</dimen>
 
     <!-- Размеры для пустого списка -->
     <dimen name="empty_list_text_size">18sp</dimen>

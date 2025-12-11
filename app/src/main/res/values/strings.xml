@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Моё Расписание</string>
+    <string name="app_name">🎓 Моё Расписание</string>
     <!-- Типы пар -->
     <string name="lesson_type_lecture">Лекция</string>
     <string name="lesson_type_practical">П/З</string>
@@ -22,6 +22,22 @@
     <string name="empty_schedule_message_sunday">🎉 Воскресенье - выходной день!</string>
     <string name="error_blank_fields">Пожалуйста, заполните все поля.</string>
     <string name="menu_logout">Выйти</string>
+    <string name="action_login">Войти</string>
+    <string name="menu_toggle_theme">Сменить тему</string>
+    <string name="menu_toggle_language">Сменить язык</string>
+    <string name="dialog_title_add_lesson">➕ Добавить новую пару</string>
+
+    <string name="dialog_title_color_picker">🎨 Выбор цвета</string>
+    <string name="label_color_palette">Палитра цветов:</string>
+    <string name="label_manual_input">✏️ Ручной ввод</string>
+    <string name="label_hex_code">HEX код:</string>
+    <string name="label_rgb">RGB:</string>
+    <string name="label_preview">Превью:</string>
+    <string name="default_color_hex">#2196F3</string>
+    <string name="default_color_red">33</string>
+    <string name="default_color_green">150</string>
+    <string name="default_color_blue">243</string>
+
     <!-- Заголовки полей ввода -->
     <string name="label_lesson_name">Название:</string>
     <string name="label_lesson_time">Время:</string>
@@ -29,6 +45,10 @@
     <string name="label_lesson_room">Аудитория:</string>
     <string name="label_lesson_type">Тип:</string>
     <string name="label_lesson_color">Цвет:</string>
+    <string name="button_contact_teacher">Написать преподавателю</string>
+    <string name="email_subject_template">Вопрос по паре: %1\$s (%2\$s)</string> <!-- %1\$s - название пары, %2\$s - время -->
+    <string name="email_body_template">Здравствуйте,\n\nУ меня вопрос по паре \"%1\$s\", которая проходит %2\$s.\nПреподаватель: %3\$s\nАудитория: %4\$s\n\nС уважением,\n[Ваше имя]</string>
+    <string name="error_no_email_app">Не найдено приложение для отправки email</string>
     <!-- Значения по умолчанию -->
     <string name="default_new_lesson_name">Новая дисциплина</string>
     <string name="default_new_lesson_time">00:00-00:00</string>
@@ -50,13 +70,27 @@
     <string name="day_short_friday">ПТ</string>
     <string name="day_short_saturday">СБ</string>
     <string name="day_short_sunday">ВС</string>
+
+    <string name="month_jan">янв</string>
+    <string name="month_feb">фев</string>
+    <string name="month_mar">мар</string>
+    <string name="month_apr">апр</string>
+    <string name="month_may">мая</string>
+    <string name="month_jun">июн</string>
+    <string name="month_jul">июл</string>
+    <string name="month_aug">авг</string>
+    <string name="month_sep">сен</string>
+    <string name="month_oct">окт</string>
+    <string name="month_nov">ноя</string>
+    <string name="month_dec">дек</string>
+
     <!-- Кнопки -->
     <string name="button_add_lesson">+</string>
     <string name="button_save">Сохранить</string>
     <string name="button_edit">Редактировать</string>
     <string name="button_delete">Удалить</string>
-    <string name="button_prev_week">Пред.</string>
-    <string name="button_next_week">След.</string>
+    <string name="button_prev_week">-</string>
+    <string name="button_next_week">-</string>
     <string name="button_today">Сегодня</string>
     <!-- Навигация -->
     <string name="navigation_week_type_numerator">(числитель)</string>
@@ -64,4 +98,39 @@
     <!-- Текст на карточке пары -->
     <string name="lesson_card_week_type_numerator">числ</string>
     <string name="lesson_card_week_type_denominator">знам</string>
+
+    <string name="login_title">Вход</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Пароль</string>
+    <string name="button_login">Войти</string>
+    <string name="button_register_prompt">Нет аккаунта? Зарегистрироваться</string>
+
+
+    <string name="register_title">Регистрация</string>
+    <string name="name_hint">Имя</string>
+    <string name="button_register">Зарегистрироваться</string>
+    <string name="button_login_prompt">Уже есть аккаунт? Войти</string>
+    <string name="error_email_required">Email обязателен</string>
+    <string name="error_invalid_email">Введите корректный email</string>
+    <string name="error_password_required">Пароль обязателен</string>
+    <string name="error_password_too_short">Пароль должен быть не менее 6 символов</string>
+    <string name="error_login_failed">Неверный email или пароль</string>
+    <string name="success_login">Вход успешен!</string>
+    <string name="error_name_required">Имя обязательно</string>
+    <string name="success_registration">Регистрация успешна</string>
+    <string name="tab_language">Язык</string>
+    <string name="tab_theme">Тема</string>
+    <string name="tab_about">О приложении</string>
+
+    <!-- Строки для фрагментов настроек (если используются) -->
+    <string name="settings_language_title">Язык приложения</string>
+    <string name="language_russian">Русский</string>
+    <string name="language_english">English</string>
+    <string name="settings_theme_title">Тема оформления</string>
+    <string name="theme_dark_mode">Тёмная тема</string>
+    <string name="about_app_title">О приложении</string>
+    <string name="app_version">Версия 1.0</string>
+    <string name="app_copyright">© 2025 Pavel Zhuravlev</string>
+
+
 </resources>

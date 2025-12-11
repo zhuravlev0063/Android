@@ -2,9 +2,9 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
-    android:padding="16dp"
-    android:paddingTop="60dp">
+    android:background="@color/colorSurface"
+    android:padding="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/empty_list_padding_vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,27 +17,37 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="@dimen/lesson_detail_save_button_margin"
+            android:layout_marginTop="@dimen/lesson_detail_input_margin_bottom_20dp">
+
 
             <EditText
                 android:id="@+id/lessonName"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/lesson_detail_0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Название предмета"
-                android:textSize="24sp"
+                android:text="@string/default_new_lesson_name"
+                android:textSize="@dimen/text_size_header"
                 android:textStyle="bold"
-                android:textColor="#333333"
+                android:textColor="@color/colorOnBackground"
                 android:background="@android:color/transparent"
-                android:padding="12dp" />
+                android:padding="@dimen/lesson_detail_input_padding" />
+
+            <ImageButton
+                android:id="@+id/buttonBack"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_arrow_back"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Вернуться назад" />
 
             <ImageButton
                 android:id="@+id/saveButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="@dimen/lesson_detail_save_button_size"
+                android:layout_height="@dimen/lesson_detail_save_button_size"
                 android:src="@drawable/ic_save"
                 android:background="?attr/selectableItemBackground"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/item_margin_horizontal"
                 android:alpha="0.3"
                 android:enabled="false" />
 
@@ -49,8 +59,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/day_card_background"
-            android:padding="16dp"
-            android:layout_marginBottom="20dp">
+            android:padding="@dimen/activity_horizontal_margin"
+            android:layout_marginBottom="@dimen/lesson_detail_input_margin_bottom_20dp">
 
             <!-- Время -->
             <LinearLayout
@@ -58,34 +68,34 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="@dimen/lesson_detail_input_margin_bottom">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="⏰"
-                    android:textSize="16sp"
-                    android:layout_marginEnd="8dp" />
+                    android:textSize="@dimen/text_size_large"
+                    android:layout_marginEnd="@dimen/dialog_add_lesson_button_margin" />
 
                 <EditText
                     android:id="@+id/lessonTime"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/lesson_detail_0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="15:40-17:00"
-                    android:textSize="18sp"
-                    android:textColor="#1976D2"
+                    android:text="@string/default_new_lesson_time"
+                    android:textSize="@dimen/text_size_xlarge"
+                    android:textColor="@color/colorPrimary"
                     android:textStyle="bold"
                     android:background="@android:color/transparent"
-                    android:padding="8dp" />
+                    android:padding="@dimen/dialog_button_margin" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#E0E0E0"
-                android:layout_marginBottom="12dp" />
+                android:layout_height="@dimen/lesson_detail_color_button_size_1dp"
+                android:background="@color/colorOutline"
+                android:layout_marginBottom="@dimen/lesson_detail_input_margin_bottom" />
 
             <!-- Преподаватель -->
             <LinearLayout
@@ -93,36 +103,37 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="@dimen/lesson_detail_8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="👨‍🏫"
-                    android:textSize="16sp"
-                    android:layout_marginEnd="8dp" />
+                    android:textSize="@dimen/text_size_large"
+                    android:layout_marginEnd="@dimen/lesson_detail_8dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Преподаватель:"
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
+                    android:text="@string/label_lesson_teacher"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/colorOnSurfaceVariant" />
 
                 <EditText
                     android:id="@+id/lessonTeacher"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/lesson_detail_0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Иванов И.И."
-                    android:textSize="14sp"
+                    android:text="@string/default_new_lesson_teacher"
+                    android:textSize="@dimen/text_size_medium"
                     android:textStyle="bold"
-                    android:textColor="#333333"
+                    android:textColor="@color/colorOnBackground"
                     android:background="@android:color/transparent"
-                    android:padding="8dp"
-                    android:layout_marginStart="8dp" />
+                    android:padding="@dimen/lesson_detail_8dp"
+                    android:layout_marginStart="@dimen/lesson_detail_8dp" />
 
             </LinearLayout>
+
 
             <!-- Аудитория -->
             <LinearLayout
@@ -130,34 +141,34 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="@dimen/lesson_detail_8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="🏢"
-                    android:textSize="16sp"
-                    android:layout_marginEnd="8dp" />
+                    android:textSize="@dimen/text_size_large"
+                    android:layout_marginEnd="@dimen/lesson_detail_8dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Аудитория:"
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
+                    android:text="@string/label_lesson_room"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/colorOnSurfaceVariant" />
 
                 <EditText
                     android:id="@+id/lessonRoom"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/lesson_detail_0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Ауд. 301"
-                    android:textSize="14sp"
+                    android:text="@string/default_new_lesson_room"
+                    android:textSize="@dimen/text_size_medium"
                     android:textStyle="bold"
-                    android:textColor="#333333"
+                    android:textColor="@color/colorOnBackground"
                     android:background="@android:color/transparent"
-                    android:padding="8dp"
-                    android:layout_marginStart="8dp" />
+                    android:padding="@dimen/lesson_detail_8dp"
+                    android:layout_marginStart="@dimen/lesson_detail_8dp" />
 
             </LinearLayout>
 
@@ -167,28 +178,28 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="@dimen/lesson_detail_8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="📚"
-                    android:textSize="16sp"
-                    android:layout_marginEnd="8dp" />
+                    android:textSize="@dimen/text_size_large"
+                    android:layout_marginEnd="@dimen/lesson_detail_8dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Тип:"
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
+                    android:text="@string/label_lesson_type"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/colorOnSurfaceVariant" />
 
                 <Spinner
                     android:id="@+id/lessonTypeSpinner"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/lesson_detail_0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="@dimen/lesson_detail_8dp"
                     android:background="@drawable/spinner_background" />
 
             </LinearLayout>
@@ -204,30 +215,37 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="🎨"
-                    android:textSize="16sp"
-                    android:layout_marginEnd="8dp" />
+                    android:textSize="@dimen/text_size_large"
+                    android:layout_marginEnd="@dimen/lesson_detail_8dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Цвет:"
-                    android:textSize="14sp"
-                    android:textColor="#666666" />
+                    android:text="@string/label_lesson_color"
+                    android:textSize="@dimen/text_size_medium"
+                    android:textColor="@color/colorOnSurfaceVariant" />
 
                 <LinearLayout
                     android:id="@+id/colorPickerLayout"
-                    android:layout_width="0dp"
+                    android:layout_width="@dimen/lesson_detail_0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:layout_marginStart="8dp"
-                    android:padding="4dp">
+                    android:layout_marginStart="@dimen/lesson_detail_8dp"
+                    android:padding="@dimen/lesson_item_margin_bottom">
 
-                    <!-- Цвета будут добавляться динамически -->
 
                 </LinearLayout>
 
             </LinearLayout>
+            <Button
+                android:id="@+id/buttonContactTeacher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/button_contact_teacher"
+                android:layout_marginTop="@dimen/lesson_detail_input_margin_bottom"
+                android:background="@drawable/button_rounded" />
+
 
         </LinearLayout>
 

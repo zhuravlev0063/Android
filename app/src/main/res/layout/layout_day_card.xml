@@ -4,19 +4,19 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/day_card_background"
-    android:padding="16dp"
-    android:layout_marginBottom="20dp">
+    android:padding="@dimen/lesson_detail_save_button_margin"
+    android:layout_marginBottom="@dimen/lesson_detail_input_margin_bottom_20dp">
 
     <TextView
         android:id="@+id/dayTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Понедельник"
-        android:textSize="24sp"
+        android:text="@string/day_monday"
+        android:textSize="@dimen/text_size_header"
         android:textStyle="bold"
-        android:textColor="#1976D2"
+        android:textColor="@color/colorPrimary"
         android:gravity="center"
-        android:layout_marginBottom="16dp" />
+        android:layout_marginBottom="@dimen/lesson_detail_save_button_margin" />
 
     <LinearLayout
         android:id="@+id/lessonsContainer"
@@ -29,13 +29,14 @@
     <!-- КНОПКА ДОБАВЛЕНИЯ НОВОЙ ПАРЫ -->
     <Button
         android:id="@+id/addLessonButton"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/dialog_color_preview_size"
+        android:layout_height="@dimen/dialog_color_preview_size"
         android:layout_gravity="center"
         android:text="+"
-        android:textSize="24sp"
-        android:textColor="#FFFFFF"
+        android:textSize="@dimen/text_size_header"
+        android:textColor="@color/colorOnPrimary"
         android:background="@drawable/add_button_background"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="@dimen/lesson_detail_input_margin_bottom"
+        android:padding="@dimen/dialog_color_button_margin"/>
 
 </LinearLayout>

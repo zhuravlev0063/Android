@@ -1,9 +1,12 @@
 package com.example.androiddd
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.graphics.drawable.GradientDrawable
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,43 +14,77 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.androiddd.utils.dpToPx
+import android.util.Log
+import android.view.MenuItem
+import com.example.androiddd.utils.LocaleManager
+import java.util.regex.Pattern
 
-class LessonDetailActivity : AppCompatActivity() {
+class LessonDetailActivity : AppCompatActivity()  {
+
+    private lateinit var buttonContactTeacher: Button
     private var originalLessonName: String = ""
     private var originalLessonTime: String = ""
     private var originalLessonTeacher: String = ""
     private var originalLessonRoom: String = ""
     private var originalLessonType: String = ""
     private var originalLessonTypeColor: Int = 0
-    private var currentLessonName: String = ""
-    private var currentLessonTime: String = "" // <-- Добавлено
-    private var currentLessonTeacher: String = ""
-    private var currentLessonRoom: String = ""
-    private var currentLessonType: String = ""
-    private var currentLessonTypeColor: Int = 0
+    private var lessonName: String = ""
+    private var lessonTime: String = ""
+    private var lessonTeacher: String = ""
+    private var lessonRoom: String = ""
+    private var lessonType: String = ""
+    private var lessonTypeColor: Int = 0
+    private lateinit var lessonNameEditText: EditText
+    private lateinit var lessonTimeEditText: EditText
+    private lateinit var lessonTeacherEditText: EditText
+    private lateinit var lessonRoomEditText: EditText
+    private lateinit var lessonTypeSpinner: Spinner
+    private lateinit var colorPickerLayout: LinearLayout
+    private lateinit var saveButton: ImageButton
     private val colorButtons = mutableListOf<ImageButton>()
+    private lateinit var buttonBack: ImageButton
 
     // Признак новой пары
     private var isNewLesson: Boolean = false
     // День недели (для новой пары)
     private var dayNameForNewLesson: String = ""
 
-    // Данные для типов пар
-    private val lessonTypes = listOf(
-        LessonType("Лекция", Color.parseColor("#2196F3")),
-        LessonType("П/З", Color.parseColor("#4CAF50")),
-        LessonType("Лаб", Color.parseColor("#FF5722")),
-        LessonType("Семинар", Color.parseColor("#9C27B0")),
-        LessonType("Консультация", Color.parseColor("#FF9800")),
-        LessonType("Доп занятие", Color.parseColor("#607D8B"))
-    )
-
+    // Данные для типов пар - теперь lateinit var, инициализируется в onCreate
+    private lateinit var lessonTypes: List<LessonType>
+    private val TAG = "LessonDetailActivity"
     data class LessonType(val name: String, val color: Int)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lesson_detail)
+
+        buttonBack = findViewById(R.id.buttonBack)
+        buttonBack.setOnClickListener {
+            // Обработка нажатия на кнопку "назад"
+            onBackPressed() // Вызывает стандартное поведение "назад", закрывает Activity
+        }
+
+        lessonNameEditText = findViewById(R.id.lessonName)
+        lessonTimeEditText = findViewById(R.id.lessonTime)
+        lessonTeacherEditText = findViewById(R.id.lessonTeacher)
+        lessonRoomEditText = findViewById(R.id.lessonRoom)
+        lessonTypeSpinner = findViewById(R.id.lessonTypeSpinner)
+        colorPickerLayout = findViewById(R.id.colorPickerLayout)
+        saveButton = findViewById(R.id.saveButton)
+        buttonContactTeacher = findViewById(R.id.buttonContactTeacher)
+
+        // --- ИНИЦИАЛИЗАЦИЯ lessonTypes ВНУТРИ onCreate ---
+        lessonTypes = listOf(
+            LessonType(getString(R.string.lesson_type_lecture), ContextCompat.getColor(this, R.color.lesson_type_lecture)),
+            LessonType(getString(R.string.lesson_type_practical), ContextCompat.getColor(this, R.color.lesson_type_practical)),
+            LessonType(getString(R.string.lesson_type_lab), ContextCompat.getColor(this, R.color.lesson_type_lab)),
+            LessonType(getString(R.string.lesson_type_seminar), ContextCompat.getColor(this, R.color.lesson_type_seminar)),
+            LessonType(getString(R.string.lesson_type_consultation), ContextCompat.getColor(this, R.color.lesson_type_consultation)),
+            LessonType(getString(R.string.lesson_type_extra), ContextCompat.getColor(this, R.color.lesson_type_extra))
+        )
+        // --- КОНЕЦ ИНИЦИАЛИЗАЦИИ ---
 
         // Получаем признак новой пары и день
         isNewLesson = intent.getBooleanExtra(MainActivity.EXTRA_IS_NEW_LESSON, false)
@@ -55,80 +92,183 @@ class LessonDetailActivity : AppCompatActivity() {
 
         if (isNewLesson) {
             // Режим новой пары
-            currentLessonName = ""
-            originalLessonName = "" // Для новой пары оригинального имени нет
-            currentLessonTime = ""
-            originalLessonTime = ""
-            currentLessonTeacher = ""
-            originalLessonTeacher = ""
-            currentLessonRoom = ""
-            originalLessonRoom = ""
-            currentLessonType = "Лекция"
-            originalLessonType = currentLessonType
-            currentLessonTypeColor = Color.parseColor("#2196F3")
-            originalLessonTypeColor = currentLessonTypeColor
+            lessonName = ""
+            lessonTime = ""
+            lessonTeacher = ""
+            lessonRoom = ""
+            lessonType = getString(R.string.lesson_type_lecture) // Используем строковый ресурс
+            lessonTypeColor = ContextCompat.getColor(this, R.color.lesson_type_lecture) // Используем цвет из ресурсов
 
+            originalLessonName = lessonName
+            originalLessonTime = lessonTime
+            originalLessonTeacher = lessonTeacher
+            originalLessonRoom = lessonRoom
+            originalLessonType = lessonType
+            originalLessonTypeColor = lessonTypeColor
             // Очищаем поля ввода
-            findViewById<EditText>(R.id.lessonName).setText("")
-            findViewById<EditText>(R.id.lessonTime).setText("")
-            findViewById<EditText>(R.id.lessonTeacher).setText("")
-            findViewById<EditText>(R.id.lessonRoom).setText("")
+            lessonNameEditText.setText("")
+            lessonTimeEditText.setText("")
+            lessonTeacherEditText.setText("")
+            lessonRoomEditText.setText("")
             setupTypeSpinner()
             setupColorPicker()
             setupSaveButton()
             setupTextWatchers()
         } else {
-            // Режим редактирования существующей пары (как было)
-            currentLessonName = intent.getStringExtra("LESSON_NAME") ?: ""
-            originalLessonName = intent.getStringExtra("ORIGINAL_LESSON_NAME") ?: currentLessonName
-            currentLessonTime = intent.getStringExtra("LESSON_TIME") ?: ""
-            originalLessonTime = currentLessonTime
-            currentLessonTeacher = intent.getStringExtra("LESSON_TEACHER") ?: ""
-            originalLessonTeacher = currentLessonTeacher
-            currentLessonRoom = intent.getStringExtra("LESSON_ROOM") ?: ""
-            originalLessonRoom = currentLessonRoom
-            currentLessonType = intent.getStringExtra("LESSON_TYPE") ?: "Лекция"
-            originalLessonType = currentLessonType
-            currentLessonTypeColor = intent.getIntExtra("LESSON_TYPE_COLOR", Color.parseColor("#2196F3"))
-            originalLessonTypeColor = currentLessonTypeColor
+            // Режим редактирования существующей пары
+            // Получаем начальные данные из Intent (это могут быть *оригинальные* или *последние сохранённые*, если MainActivity передаёт последние)
+            val initialName = intent.getStringExtra("LESSON_NAME") ?: ""
+            val initialTime = intent.getStringExtra("LESSON_TIME") ?: ""
+            val initialTeacher = intent.getStringExtra("LESSON_TEACHER") ?: ""
+            val initialRoom = intent.getStringExtra("LESSON_ROOM") ?: ""
+            val initialType = intent.getStringExtra("LESSON_TYPE") ?: getString(R.string.lesson_type_lecture) // Используем строковый ресурс
+            val initialTypeColor = intent.getIntExtra("LESSON_TYPE_COLOR", ContextCompat.getColor(this, R.color.lesson_type_lecture)) // Используем цвет из ресурсов
 
-            // Заполняем данные на экране
-            findViewById<EditText>(R.id.lessonName).setText(currentLessonName)
-            findViewById<EditText>(R.id.lessonTime).setText(currentLessonTime)
-            findViewById<EditText>(R.id.lessonTeacher).setText(currentLessonTeacher)
-            findViewById<EditText>(R.id.lessonRoom).setText(currentLessonRoom)
+            // --- ЧТЕНИЕ ПОСЛЕДНИХ СОХРАНЁННЫХ ДАННЫХ ИЗ SharedPreferences ---
+            // Используем initialName и initialTime как *ключи* для получения *последних* значений
+            lessonName = getSavedLessonData(initialName, initialTime, "name", initialName)
+            lessonTime = getSavedLessonData(initialName, initialTime, "time", initialTime)
+            lessonTeacher = getSavedLessonData(initialName, initialTime, "teacher", initialTeacher)
+            lessonRoom = getSavedLessonData(initialName, initialTime, "room", initialRoom)
+            lessonType = getSavedLessonData(initialName, initialTime, "type", initialType)
+            lessonTypeColor = getSavedLessonColor(initialName, initialTime, "type_color", initialTypeColor)
+            // ---
+            originalLessonName = initialName // <-- Сохраняем оригинальное имя (для ключа при сохранении)
+            originalLessonTime = initialTime // <-- Сохраняем оригинальное время (для ключа при сохранении)
+            originalLessonTeacher = initialTeacher // <-- Сохраняем оригинального препода (для сравнения)
+            originalLessonRoom = initialRoom // <-- Сохраняем оригинальную аудиторию (для сравнения)
+            originalLessonType = initialType // <-- Сохраняем оригинальный тип (для сравнения)
+            originalLessonTypeColor = initialTypeColor // <-- Сохраняем оригинальный цвет (для сравнения)
+
+            Log.d("LessonDetailActivity", "Загружены данные: Name=$lessonName, Time=$lessonTime, Teacher=$lessonTeacher, Room=$lessonRoom, Type=$lessonType, TypeColor=$lessonTypeColor")
+
+            // Заполняем данные на экране *последними* сохранёнными значениями
+            lessonNameEditText.setText(lessonName)
+            lessonTimeEditText.setText(lessonTime)
+            lessonTeacherEditText.setText(lessonTeacher)
+            lessonRoomEditText.setText(lessonRoom)
             setupTypeSpinner()
             setupColorPicker()
             setupSaveButton()
             setupTextWatchers()
+            setupContactTeacherButton()
+        }
+    }
+    private fun getSavedLessonData(originalName: String, originalTime: String, field: String, defaultValue: String): String {
+        val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
+        // Заменяем пробелы и двоеточия на подчеркивание ДЛЯ КЛЮЧА
+        val safeOriginalName = originalName.replace(" ", "_").replace(":", "_").replace("-", "_")
+        val safeOriginalTime = originalTime.replace(" ", "_").replace(":", "_").replace("-", "_")
+        val key = "${safeOriginalName}_${safeOriginalTime}_$field"
+        val result = sharedPref.getString(key, defaultValue) ?: defaultValue
+        Log.d("LessonDetailActivity", "getSavedLessonData: key=$key, result=$result") // <-- Добавим лог
+        return result
+    }
+
+    private fun getSavedLessonColor(originalName: String, originalTime: String, field: String, defaultValue: Int): Int {
+        val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
+        // Заменяем пробелы и двоеточия на подчеркивание ДЛЯ КЛЮЧА
+        val safeOriginalName = originalName.replace(" ", "_").replace(":", "_").replace("-", "_")
+        val safeOriginalTime = originalTime.replace(" ", "_").replace(":", "_").replace("-", "_")
+        val key = "${safeOriginalName}_${safeOriginalTime}_$field"
+        val result = sharedPref.getInt(key, defaultValue)
+        Log.d("LessonDetailActivity", "getSavedLessonColor: key=$key, result=$result") // <-- Добавим лог
+        return result
+    }
+    private fun setupContactTeacherButton() {
+        // Получаем email из поля преподавателя или каким-то другим способом (например, из базы данных по имени)
+        // Пока что, просто возьмём текст из поля ввода как есть. В реальном приложении здесь будет логика извлечения email.
+        val teacherName = lessonTeacherEditText.text.toString().trim()
+        // Пример: Ищем email в формате "Имя Фамилия (email@example.com)" или просто "email@example.com" в имени препода
+        val emailPattern = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-z]{2,}")
+        val matcher = emailPattern.matcher(teacherName)
+
+        val teacherEmail =
+            lessonTeacherEditText.text.toString().trim() // Извлекаем email из EditText
+        Log.d("LessonDetailActivity", "Полученный email преподавателя: '$teacherEmail'") // <-- Добавь это
+
+
+        if (teacherEmail.isNotEmpty()) {
+            buttonContactTeacher.visibility = View.VISIBLE
+            buttonContactTeacher.setOnClickListener {
+                val subject =
+                    getString(R.string.email_subject_template, lessonName, lessonTime)
+                val body = getString(
+                    R.string.email_body_template,
+                    lessonName,
+                    lessonTime,
+                    lessonTeacher,
+                    lessonRoom
+                )
+
+                // --- ИЗМЕНЕНИЕ: Используем ACTION_SEND вместо ACTION_SENDTO ---
+                val emailIntent = Intent(Intent.ACTION_SEND).apply { // <-- Заменили на SEND
+                    type = "message/rfc822" // Указываем MIME-тип для email
+                    putExtra(
+                        Intent.EXTRA_EMAIL,
+                        arrayOf(teacherEmail)
+                    ) // Передаём получателя как массив
+                    putExtra(Intent.EXTRA_SUBJECT, subject) // Тема
+                    putExtra(Intent.EXTRA_TEXT, body)       // Текст
+                }
+
+                // Проверяем, есть ли приложение, которое может обработать это намерение
+                if (emailIntent.resolveActivity(packageManager) != null) {
+                    startActivity(emailIntent) // <-- Запуск неявного намерения
+                } else {
+                    // Если нет подходящего приложения, показываем Toast
+                    Toast.makeText(this, getString(R.string.error_no_email_app), Toast.LENGTH_LONG)
+                        .show()
+                }
+            }
+        }else {
+            Log.w("LessonDetailActivity", "Email преподавателя пуст или недействителен: '$teacherEmail'")
+            buttonContactTeacher.visibility = View.GONE
         }
     }
     private fun setupTypeSpinner() {
         val spinner = findViewById<Spinner>(R.id.lessonTypeSpinner)
         val typeNames = lessonTypes.map { it.name }
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, typeNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        // ИСПОЛЬЗУЕМ НОВЫЙ layout
+        val adapter = ArrayAdapter(this, R.layout.spinner_item_type, typeNames)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) // Или layout для dropdown
         spinner.adapter = adapter
-        val currentIndex = typeNames.indexOf(currentLessonType)
+        val currentIndex = typeNames.indexOf(lessonType)
         if (currentIndex != -1) {
             spinner.setSelection(currentIndex)
         }
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                currentLessonType = lessonTypes[position].name
+                lessonType = lessonTypes[position].name
                 checkForChanges()
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
-
+    override fun attachBaseContext(base: Context?) {
+        Log.d(TAG, "LessonDetailActivity.attachBaseContext called with base context locale: ${base?.resources?.configuration?.locales?.get(0)?.language ?: "null"}")
+        val updatedContext = if (base != null) {
+            val savedLanguage = LocaleManager.getLanguage(base) // Получаем сохранённый язык
+            Log.d(TAG, "LocaleManager.getLanguage returned: $savedLanguage")
+            if (savedLanguage != null) {
+                // Если язык сохранён, применяем его к контексту Activity
+                LocaleManager.updateContext(base, savedLanguage)
+            } else {
+                // Иначе используем системный
+                base
+            }
+        } else {
+            base
+        }
+        super.attachBaseContext(updatedContext)
+    }
     private fun setupColorPicker() {
         val colorPickerLayout = findViewById<LinearLayout>(R.id.colorPickerLayout)
         val colors = listOf(
-            Color.parseColor("#2196F3"), // Синий
-            Color.parseColor("#4CAF50"), // Зеленый
-            Color.parseColor("#FF5722"), // Оранжевый
-            Color.parseColor("#9C27B0")  // Фиолетовый
+            ContextCompat.getColor(this, R.color.lesson_type_lecture), // Синий
+            ContextCompat.getColor(this, R.color.lesson_type_practical), // Зеленый
+            ContextCompat.getColor(this, R.color.lesson_type_lab), // Оранжевый
+            ContextCompat.getColor(this, R.color.lesson_type_seminar)  // Фиолетовый
         )
 
         colorButtons.clear()
@@ -138,16 +278,16 @@ class LessonDetailActivity : AppCompatActivity() {
         colors.forEach { color ->
             val colorButton = ImageButton(this).apply {
                 layoutParams = LinearLayout.LayoutParams(
-                    36.dpToPx(),
-                    36.dpToPx()
+                    36.dpToPx(this@LessonDetailActivity),
+                    36.dpToPx(this@LessonDetailActivity)
                 ).apply {
-                    marginEnd = 6.dpToPx()
+                    marginEnd = 6.dpToPx(this@LessonDetailActivity)
                 }
                 tag = color
-                background = createColorButtonDrawable(color, color == currentLessonTypeColor)
+                background = createColorButtonDrawable(color, color == lessonTypeColor)
                 elevation = 4f
                 setOnClickListener {
-                    currentLessonTypeColor = color
+                    lessonTypeColor = color
                     checkForChanges()
                     updateAllColorButtons()
                 }
@@ -159,12 +299,12 @@ class LessonDetailActivity : AppCompatActivity() {
         // Кнопка палитры
         val paletteButton = ImageButton(this).apply {
             layoutParams = LinearLayout.LayoutParams(
-                36.dpToPx(),
-                36.dpToPx()
+                36.dpToPx(this@LessonDetailActivity),
+                36.dpToPx(this@LessonDetailActivity)
             )
             setImageResource(R.drawable.ic_color_palette)
             scaleType = ImageView.ScaleType.CENTER_INSIDE
-            background = createColorButtonDrawable(Color.parseColor("#F5F5F5"), false)
+            background = createColorButtonDrawable(ContextCompat.getColor(this@LessonDetailActivity, R.color.colorSurfaceVariant), false)
             elevation = 4f
             setOnClickListener {
                 showColorPickerDialog()
@@ -204,17 +344,25 @@ class LessonDetailActivity : AppCompatActivity() {
                     value
                 ))
 
-                val colorButton = ImageButton(this).apply {
+                val colorButton = ImageButton(this@LessonDetailActivity).apply { // <-- Передаём Activity как Context
                     layoutParams = GridLayout.LayoutParams().apply {
-                        width = 20.dpToPx()
-                        height = 20.dpToPx()
+                        // Если dpToPx требует Context:
+                        // width = 20.dpToPx(this@LessonDetailActivity) // Пример
+                        // height = 20.dpToPx(this@LessonDetailActivity) // Пример
+                        width = resources.getDimensionPixelSize(R.dimen.dialog_color_button_size) // Лучше так
+                        height = resources.getDimensionPixelSize(R.dimen.dialog_color_button_size) // Лучше так
                         columnSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
                         rowSpec = GridLayout.spec(GridLayout.UNDEFINED, 1f)
-                        setMargins(1, 1, 1, 1)
+                        setMargins(
+                            resources.getDimensionPixelSize(R.dimen.dialog_color_button_margin),
+                            resources.getDimensionPixelSize(R.dimen.dialog_color_button_margin),
+                            resources.getDimensionPixelSize(R.dimen.dialog_color_button_margin),
+                            resources.getDimensionPixelSize(R.dimen.dialog_color_button_margin)
+                        )
                     }
                     setBackgroundColor(color)
                     setOnClickListener {
-                        currentLessonTypeColor = color
+                        lessonTypeColor = color
                         updateAllColorButtons()
                         colorPreview.setBackgroundColor(color)
                         updateInputFields(dialogView, color)
@@ -231,8 +379,8 @@ class LessonDetailActivity : AppCompatActivity() {
         val greenInput = dialogView.findViewById<EditText>(R.id.greenInput)
         val blueInput = dialogView.findViewById<EditText>(R.id.blueInput)
 
-        updateInputFields(dialogView, currentLessonTypeColor)
-        colorPreview.setBackgroundColor(currentLessonTypeColor)
+        updateInputFields(dialogView, lessonTypeColor)
+        colorPreview.setBackgroundColor(lessonTypeColor)
 
         var isUpdating = false
 
@@ -289,23 +437,22 @@ class LessonDetailActivity : AppCompatActivity() {
             val hex = hexInput.text.toString()
             if (hex.length == 7 && hex.startsWith("#")) {
                 try {
-                    currentLessonTypeColor = Color.parseColor(hex)
+                    lessonTypeColor = Color.parseColor(hex)
                     updateAllColorButtons()
-                    colorPreview.setBackgroundColor(currentLessonTypeColor)
+                    colorPreview.setBackgroundColor(lessonTypeColor)
                     dialog.dismiss()
                     checkForChanges()
                 } catch (e: Exception) {
-                    Toast.makeText(this, "Неверный формат цвета", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LessonDetailActivity, getString(R.string.error_invalid_color_format), Toast.LENGTH_SHORT).show() // Используем Activity Context
                 }
             } else {
-                Toast.makeText(this, "Введите цвет в формате #RRGGBB", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LessonDetailActivity, getString(R.string.error_enter_color_format), Toast.LENGTH_SHORT).show() // Используем Activity Context
             }
         }
         cancelButton.setOnClickListener {
             dialog.dismiss()
         }
     }
-
     private fun updateInputFields(dialogView: View, color: Int) {
         val hexInput = dialogView.findViewById<EditText>(R.id.hexInput)
         val redInput = dialogView.findViewById<EditText>(R.id.redInput)
@@ -322,20 +469,15 @@ class LessonDetailActivity : AppCompatActivity() {
         blueInput.setText(blue.toString())
     }
 
-    // УДАЛЕНО: setColorToInputs
-    // УДАЛЕНО: createHexTextWatcher
-    // УДАЛЕНО: createRGBTextWatcher
-    // УДАЛЕНО: applyManualColor
-
     private fun createColorButtonDrawable(color: Int, isSelected: Boolean): GradientDrawable {
         return GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            cornerRadius = 12f
+            cornerRadius = resources.getDimension(R.dimen.lesson_detail_input_margin_bottom) // Используем dimen
             if (isSelected) {
-                setStroke(4, Color.BLACK)
+                setStroke(4, ContextCompat.getColor(this@LessonDetailActivity, R.color.colorOnSurface)) // Используем цвет из ресурсов
                 setColor(color)
             } else {
-                setStroke(1, Color.parseColor("#CCCCCC"))
+                setStroke(1, ContextCompat.getColor(this@LessonDetailActivity, R.color.colorOutline)) // Используем цвет из ресурсов
                 setColor(color)
             }
         }
@@ -344,7 +486,7 @@ class LessonDetailActivity : AppCompatActivity() {
     private fun updateAllColorButtons() {
         colorButtons.forEach { button ->
             val buttonColor = button.tag as Int
-            val isSelected = buttonColor == currentLessonTypeColor
+            val isSelected = buttonColor == lessonTypeColor
             button.background = createColorButtonDrawable(buttonColor, isSelected)
         }
     }
@@ -375,12 +517,12 @@ class LessonDetailActivity : AppCompatActivity() {
         val currentTeacher = findViewById<EditText>(R.id.lessonTeacher).text.toString().trim()
         val currentRoom = findViewById<EditText>(R.id.lessonRoom).text.toString().trim()
 
-        val hasChanges = currentName != currentLessonName ||
-                currentTime != currentLessonTime ||
-                currentTeacher != currentLessonTeacher ||
-                currentRoom != currentLessonRoom ||
-                currentLessonType != originalLessonType ||
-                currentLessonTypeColor != originalLessonTypeColor
+        val hasChanges = currentName != lessonName ||
+                currentTime != lessonTime ||
+                currentTeacher != lessonTeacher ||
+                currentRoom != lessonRoom ||
+                lessonType != originalLessonType ||
+                lessonTypeColor != originalLessonTypeColor
 
         val saveButton = findViewById<ImageButton>(R.id.saveButton)
         if (hasChanges && currentName.isNotBlank() && currentTime.isNotBlank()) {
@@ -400,37 +542,51 @@ class LessonDetailActivity : AppCompatActivity() {
     }
 
     private fun saveAndExit() {
-        val newName = findViewById<EditText>(R.id.lessonName).text.toString().trim()
-        val newTime = findViewById<EditText>(R.id.lessonTime).text.toString().trim()
-        val newTeacher = findViewById<EditText>(R.id.lessonTeacher).text.toString().trim()
-        val newRoom = findViewById<EditText>(R.id.lessonRoom).text.toString().trim()
+        val newName = lessonNameEditText.text.toString().trim()
+        val newTime = lessonTimeEditText.text.toString().trim()
+        val newTeacher = lessonTeacherEditText.text.toString().trim()
+        val newRoom = lessonRoomEditText.text.toString().trim()
+        // val newType и newTypeColor получены из других полей (colorButtons, spinner)
 
         if (newName.isNotBlank() && newTime.isNotBlank()) {
             val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
             val editor = sharedPref.edit()
 
             if (isNewLesson && dayNameForNewLesson.isNotEmpty()) {
-                // Заменяем пробелы и двоеточия на подчеркивание для новой пары
-                val safeNewName = newName.replace(" ", "_").replace(":", "_").replace("-", "_")
-                val safeNewTime = newTime.replace(" ", "_").replace(":", "_").replace("-", "_")
-                editor.putString("${safeNewName}_${safeNewTime}_name", newName)
-                editor.putString("${safeNewName}_${safeNewTime}_time", newTime)
-                editor.putString("${safeNewName}_${safeNewTime}_teacher", newTeacher)
-                editor.putString("${safeNewName}_${safeNewTime}_room", newRoom)
-                editor.putString("${safeNewName}_${safeNewTime}_type", currentLessonType)
-                editor.putInt("${safeNewName}_${safeNewTime}_type_color", currentLessonTypeColor)
+                // --- СОХРАНЕНИЕ НОВОЙ ПАРЫ ---
+                // Генерируем уникальный идентификатор
+                val uniqueId = java.util.UUID.randomUUID().toString()
+                val uniqueName = "${dayNameForNewLesson}_${newTime}_$uniqueId" // Комбинируем день, время и UUID
+
+                // Сохраняем данные новой пары под уникальным ключом (имя_время_uuid)
+                editor.putString("${uniqueName}_name", newName)
+                editor.putString("${uniqueName}_time", newTime)
+                editor.putString("${uniqueName}_teacher", newTeacher)
+                editor.putString("${uniqueName}_room", newRoom)
+                editor.putString("${uniqueName}_type", lessonType) // Используем текущий выбранный тип
+                editor.putInt("${uniqueName}_type_color", lessonTypeColor) // Используем текущий выбранный цвет
 
                 // Добавляем новую пару в список для дня
-                addToUserAddedLessonsForDay(dayNameForNewLesson, newTime, newName, newTeacher, newRoom, currentLessonType, currentLessonTypeColor)
+                addToUserAddedLessonsForDay(dayNameForNewLesson, newTime, newName, newTeacher, newRoom, lessonType, lessonTypeColor, uniqueId) // Передаем uniqueId
+                // ---
             } else {
-                val safeOriginalName = originalLessonName.replace(" ", "_").replace(":", "_").replace("-", "_")
-                val safeOriginalTime = originalLessonTime.replace(" ", "_").replace(":", "_").replace("-", "_")
+                // --- СОХРАНЕНИЕ СУЩЕСТВУЮЩЕЙ ПАРЫ ---
+                // Используем *оригинальные* (или *начальные*) имена/время как ключи для *обновления* существующей пары
+                // Эти значения были получены из Intent при открытии
+                val originalNameFromIntent = intent.getStringExtra("ORIGINAL_LESSON_NAME") ?: lessonName // Используем lessonName как fallback
+                val originalTimeFromIntent = intent.getStringExtra("ORIGINAL_LESSON_TIME") ?: lessonTime // Используем lessonTime как fallback
+
+                // Заменяем пробелы и двоеточия на подчеркивание ДЛЯ ОРИГИНАЛЬНЫХ КЛЮЧЕЙ
+                val safeOriginalName = originalNameFromIntent.replace(" ", "_").replace(":", "_").replace("-", "_")
+                val safeOriginalTime = originalTimeFromIntent.replace(" ", "_").replace(":", "_").replace("-", "_")
+
                 editor.putString("${safeOriginalName}_${safeOriginalTime}_name", newName)
                 editor.putString("${safeOriginalName}_${safeOriginalTime}_time", newTime)
                 editor.putString("${safeOriginalName}_${safeOriginalTime}_teacher", newTeacher)
                 editor.putString("${safeOriginalName}_${safeOriginalTime}_room", newRoom)
-                editor.putString("${safeOriginalName}_${safeOriginalTime}_type", currentLessonType)
-                editor.putInt("${safeOriginalName}_${safeOriginalTime}_type_color", currentLessonTypeColor)
+                editor.putString("${safeOriginalName}_${safeOriginalTime}_type", lessonType) // Используем текущий выбранный тип
+                editor.putInt("${safeOriginalName}_${safeOriginalTime}_type_color", lessonTypeColor) // Используем текущий выбранный цвет
+                // ---
             }
             editor.apply()
 
@@ -439,22 +595,27 @@ class LessonDetailActivity : AppCompatActivity() {
                 putExtra("UPDATED_LESSON_TIME", newTime)
                 putExtra("UPDATED_LESSON_TEACHER", newTeacher)
                 putExtra("UPDATED_LESSON_ROOM", newRoom)
-                putExtra("UPDATED_LESSON_TYPE", currentLessonType)
-                putExtra("UPDATED_LESSON_TYPE_COLOR", currentLessonTypeColor)
+                putExtra("UPDATED_LESSON_TYPE", lessonType)
+                putExtra("UPDATED_LESSON_TYPE_COLOR", lessonTypeColor)
                 putExtra(MainActivity.EXTRA_DAY_NAME, if (isNewLesson) dayNameForNewLesson else null)
                 putExtra(MainActivity.EXTRA_IS_NEW_LESSON, isNewLesson)
                 if (!isNewLesson) {
-                    putExtra("ORIGINAL_LESSON_NAME", originalLessonName)
-                    putExtra("ORIGINAL_LESSON_TIME", originalLessonTime)
+                    // putExtra("ORIGINAL_LESSON_NAME", originalNameFromIntent) // <-- Не нужно передавать обратно
+                    // putExtra("ORIGINAL_LESSON_TIME", originalTimeFromIntent) // <-- Не нужно передавать обратно
+                    putExtra("ORIGINAL_LESSON_NAME", originalLessonName) // <-- Всё-таки передаём, чтобы MainActivity знал, что обновлять
+                    putExtra("ORIGINAL_LESSON_TIME", originalLessonTime) // <-- Всё-таки передаём, чтобы MainActivity знал, что обновлять
                 }
             }
             setResult(RESULT_OK, resultIntent)
             finish()
+        } else {
+            // Показать Toast, если поля пусты
+            Toast.makeText(this, getString(R.string.error_blank_fields), Toast.LENGTH_SHORT).show()
         }
     }
 
     // Метод для добавления новой пары в JSON-список для дня
-    private fun addToUserAddedLessonsForDay(dayName: String, lessonTime: String, lessonName: String, lessonTeacher: String, lessonRoom: String, lessonType: String, lessonTypeColor: Int) {
+    private fun addToUserAddedLessonsForDay(dayName: String, lessonTime: String, lessonName: String, lessonTeacher: String, lessonRoom: String, lessonType: String, lessonTypeColor: Int, uniqueId: String) {
         val sharedPref = getSharedPreferences("lesson_data", MODE_PRIVATE)
         val key = "user_added_lessons_$dayName"
         val currentJsonString = sharedPref.getString(key, "[]") ?: "[]"
@@ -471,46 +632,59 @@ class LessonDetailActivity : AppCompatActivity() {
             put("room", lessonRoom)
             put("type", lessonType)
             put("typeColor", lessonTypeColor)
+            put("uniqueId", uniqueId)
         }
         jsonArray.put(lessonJson)
 
         sharedPref.edit().putString(key, jsonArray.toString()).apply()
     }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                // Обработка нажатия на "стрелку назад" в ActionBar
+                onBackPressed() // Вызывает стандартное поведение "назад", закрывает Activity
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
 
 
     override fun onBackPressed() {
-        val newName = findViewById<EditText>(R.id.lessonName).text.toString().trim()
-        val newTime = findViewById<EditText>(R.id.lessonTime).text.toString().trim()
-        val newTeacher = findViewById<EditText>(R.id.lessonTeacher).text.toString().trim()
-        val newRoom = findViewById<EditText>(R.id.lessonRoom).text.toString().trim()
+        // Логика сохранения при нажатии "назад", аналогично предыдущей версии
+        val newName = lessonNameEditText.text.toString().trim()
+        val newTime = lessonTimeEditText.text.toString().trim()
+        val newTeacher = lessonTeacherEditText.text.toString().trim()
+        val newRoom = lessonRoomEditText.text.toString().trim()
 
-        val hasChanges = newName != currentLessonName ||
-                newTime != currentLessonTime ||
-                newTeacher != currentLessonTeacher ||
-                newRoom != currentLessonRoom ||
-                currentLessonType != originalLessonType ||
-                currentLessonTypeColor != originalLessonTypeColor
+        val hasChanges = newName != lessonName || // Сравниваем с начальным значением
+                newTime != lessonTime || // Сравниваем с начальным значением
+                newTeacher != lessonTeacher || // Сравниваем с начальным значением
+                newRoom != lessonRoom || // Сравниваем с начальным значением
+                lessonType != intent.getStringExtra("LESSON_TYPE") ?: getString(R.string.lesson_type_lecture) || // Сравниваем с начальным типом
+                lessonTypeColor != intent.getIntExtra("LESSON_TYPE_COLOR", ContextCompat.getColor(this, R.color.lesson_type_lecture)) // Сравниваем с начальным цветом
 
         if (hasChanges) {
             showSaveDialog()
         } else {
-            setResult(RESULT_CANCELED)
+            setResult(Activity.RESULT_CANCELED)
             super.onBackPressed()
         }
     }
 
     private fun showSaveDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Сохранение")
-            .setMessage("Сохранить изменения?")
-            .setPositiveButton("Сохранить") { dialog, which ->
+            .setTitle(getString(R.string.dialog_title_save))
+            .setMessage(getString(R.string.dialog_message_save))
+            .setPositiveButton(getString(R.string.dialog_button_save)) { dialog, which ->
                 saveAndExit()
             }
-            .setNegativeButton("Не сохранять") { dialog, which ->
-                setResult(RESULT_CANCELED)
+            .setNegativeButton(getString(R.string.dialog_button_discard)) { dialog, which ->
+                setResult(Activity.RESULT_CANCELED)
                 finish()
             }
-            .setNeutralButton("Отмена", null)
+            .setNeutralButton(getString(R.string.dialog_button_cancel), null)
             .show()
     }
 }

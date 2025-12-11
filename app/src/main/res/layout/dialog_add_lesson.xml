@@ -2,118 +2,118 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
+    android:padding="@dimen/lesson_detail_save_button_margin"
     android:background="@drawable/dialog_background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/lesson_detail_save_button_margin">
 
         <!-- Заголовок -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="➕ Добавить новую пару"
-            android:textSize="20sp"
+            android:text="@string/dialog_title_add_lesson"
+            android:textSize="@dimen/text_size_title"
             android:textStyle="bold"
-            android:textColor="#333333"
+            android:textColor="@color/colorOnSurface"
             android:gravity="center"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="@dimen/lesson_detail_input_margin_bottom_20dp" />
 
         <!-- Название пары -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Название предмета:"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginBottom="4dp" />
+            android:text="@string/label_lesson_name"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/colorOnSurfaceVariant"
+            android:layout_marginBottom="@dimen/lesson_item_margin_bottom" />
 
         <EditText
             android:id="@+id/newLessonName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Новый предмет"
-            android:textSize="16sp"
+            android:text="@string/default_new_lesson_name"
+            android:textSize="@dimen/text_size_large"
             android:background="@drawable/edit_text_rounded"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:padding="@dimen/lesson_detail_input_margin_bottom"
+            android:layout_marginBottom="@dimen/lesson_detail_save_button_margin" />
 
         <!-- Время -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Время:"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginBottom="4dp" />
+            android:text="@string/label_lesson_time"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/colorOnSurfaceVariant"
+            android:layout_marginBottom="@dimen/lesson_item_margin_bottom" />
 
         <EditText
             android:id="@+id/newLessonTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="09:00-10:30"
-            android:textSize="16sp"
+            android:text="@string/default_new_lesson_time"
+            android:textSize="@dimen/text_size_large"
             android:background="@drawable/edit_text_rounded"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:padding="@dimen/lesson_detail_input_margin_bottom"
+            android:layout_marginBottom="@dimen/lesson_detail_save_button_margin" />
 
         <!-- Преподаватель -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Преподаватель:"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginBottom="4dp" />
+            android:text="@string/label_lesson_teacher"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/colorOnSurfaceVariant"
+            android:layout_marginBottom="@dimen/lesson_item_margin_bottom" />
 
         <EditText
             android:id="@+id/newLessonTeacher"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Преподаватель"
-            android:textSize="16sp"
+            android:text="@string/default_new_lesson_teacher"
+            android:textSize="@dimen/text_size_large"
             android:background="@drawable/edit_text_rounded"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:padding="@dimen/lesson_detail_input_margin_bottom"
+            android:layout_marginBottom="@dimen/lesson_detail_save_button_margin" />
 
         <!-- Аудитория -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Аудитория:"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginBottom="4dp" />
+            android:text="@string/label_lesson_room"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/colorOnSurfaceVariant"
+            android:layout_marginBottom="@dimen/lesson_item_margin_bottom" />
 
         <EditText
             android:id="@+id/newLessonRoom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ауд. 000"
-            android:textSize="16sp"
+            android:text="@string/default_new_lesson_room"
+            android:textSize="@dimen/text_size_large"
             android:background="@drawable/edit_text_rounded"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:padding="@dimen/lesson_detail_input_margin_bottom"
+            android:layout_marginBottom="@dimen/lesson_detail_save_button_margin" />
 
         <!-- Тип пары -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Тип пары:"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginBottom="4dp" />
+            android:text="@string/label_lesson_type"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/colorOnSurfaceVariant"
+            android:layout_marginBottom="@dimen/lesson_item_margin_bottom" />
 
         <Spinner
             android:id="@+id/newLessonTypeSpinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/spinner_background"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp" />
+            android:padding="@dimen/lesson_detail_input_margin_bottom"
+            android:layout_marginBottom="@dimen/lesson_detail_save_button_margin" />
 
         <!-- Кнопки -->
         <LinearLayout
@@ -124,24 +124,24 @@
 
             <Button
                 android:id="@+id/addLessonConfirmButton"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
+                android:layout_width="@dimen/lesson_detail_0dp"
+                android:layout_height="@dimen/dialog_color_preview_size_44"
                 android:layout_weight="1"
-                android:text="Добавить"
-                android:textSize="14sp"
+                android:text="@string/dialog_button_add"
+                android:textSize="@dimen/text_size_medium"
                 android:textStyle="bold"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/colorOnPrimary"
                 android:background="@drawable/button_rounded"
-                android:layout_marginEnd="8dp" />
+                android:layout_marginEnd="@dimen/lesson_detail_8dp" />
 
             <Button
                 android:id="@+id/addLessonCancelButton"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
+                android:layout_width="@dimen/lesson_detail_0dp"
+                android:layout_height="@dimen/dialog_color_preview_size_44"
                 android:layout_weight="1"
-                android:text="Отмена"
-                android:textSize="14sp"
-                android:textColor="#666666"
+                android:text="@string/dialog_button_cancel"
+                android:textSize="@dimen/text_size_medium"
+                android:textColor="@color/colorOnSurfaceVariant"
                 android:background="@drawable/button_cancel" />
 
         </LinearLayout>

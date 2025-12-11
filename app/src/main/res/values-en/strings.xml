@@ -22,6 +22,23 @@
     <string name="empty_schedule_message_sunday">🎉 Sunday is a day off!</string>
     <string name="error_blank_fields">Please fill in all fields.</string>
     <string name="menu_logout">Logout</string>
+    <string name="action_login">Log In</string>
+    <string name="menu_toggle_theme">Toggle Theme</string>
+    <string name="menu_toggle_language">Toggle Language</string>
+    <string name="dialog_title_add_lesson">➕ Add New Lesson</string>
+
+
+    <string name="dialog_title_color_picker">🎨 Color Picker</string>
+    <string name="label_color_palette">Color Palette:</string>
+    <string name="label_manual_input">✏️ Manual Input</string>
+    <string name="label_hex_code">HEX Code:</string>
+    <string name="label_rgb">RGB:</string>
+    <string name="label_preview">Preview:</string>
+    <string name="default_color_hex">#2196F3</string>
+    <string name="default_color_red">33</string>
+    <string name="default_color_green">150</string>
+    <string name="default_color_blue">243</string>
+
     <!-- Input Field Labels -->
     <string name="label_lesson_name">Name:</string>
     <string name="label_lesson_time">Time:</string>
@@ -29,6 +46,10 @@
     <string name="label_lesson_room">Room:</string>
     <string name="label_lesson_type">Type:</string>
     <string name="label_lesson_color">Color:</string>
+    <string name="button_contact_teacher">Email Teacher</string>
+    <string name="email_subject_template">Question about lesson: %1\$s (%2\$s)</string>
+    <string name="email_body_template">Hello,\n\nI have a question about the lesson \"%1\$s\" scheduled for %2\$s.\nTeacher: %3\$s\nRoom: %4\$s\n\nBest regards,\n[Your Name]</string>
+    <string name="error_no_email_app">No email app found to send the message</string>
     <!-- Default Values -->
     <string name="default_new_lesson_name">New Subject</string>
     <string name="default_new_lesson_time">00:00-00:00</string>
@@ -50,13 +71,27 @@
     <string name="day_short_friday">Fr</string>
     <string name="day_short_saturday">Sa</string>
     <string name="day_short_sunday">Su</string>
+
+    <string name="month_jan">Jan</string>
+    <string name="month_feb">Feb</string>
+    <string name="month_mar">Mar</string>
+    <string name="month_apr">Apr</string>
+    <string name="month_may">May</string>
+    <string name="month_jun">Jun</string>
+    <string name="month_jul">Jul</string>
+    <string name="month_aug">Aug</string>
+    <string name="month_sep">Sep</string>
+    <string name="month_oct">Oct</string>
+    <string name="month_nov">Nov</string>
+    <string name="month_dec">Dec</string>
+
     <!-- Buttons -->
     <string name="button_add_lesson">+</string>
     <string name="button_save">Save</string>
     <string name="button_edit">Edit</string>
     <string name="button_delete">Delete</string>
-    <string name="button_prev_week">Prev</string>
-    <string name="button_next_week">Next</string>
+    <string name="button_prev_week">-</string>
+    <string name="button_next_week">-</string>
     <string name="button_today">Today</string>
     <!-- Navigation -->
     <string name="navigation_week_type_numerator">(numerator)</string>
@@ -64,4 +99,37 @@
     <!-- Text on Lesson Card -->
     <string name="lesson_card_week_type_numerator">num</string>
     <string name="lesson_card_week_type_denominator">den</string>
+
+    <string name="login_title">Login</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="button_login">Login</string>
+    <string name="button_register_prompt">No account? Register</string>
+
+    <string name="register_title">Register</string>
+    <string name="name_hint">Name</string>
+    <string name="button_register">Register</string>
+    <string name="button_login_prompt">Already have an account? Login</string>
+    <string name="error_email_required">Email is required</string>
+    <string name="error_invalid_email">Please enter a valid email</string>
+    <string name="error_password_required">Password is required</string>
+    <string name="error_password_too_short">Password must be at least 6 characters</string>
+    <string name="error_login_failed">Incorrect email or password</string>
+    <string name="success_login">Login successful!</string>
+    <string name="error_name_required">Name is required</string>
+    <string name="success_registration">Registration succesful</string>
+    <string name="tab_language">Language</string>
+    <string name="tab_theme">Theme</string>
+    <string name="tab_about">About</string>
+
+    <!-- Strings for Settings Fragments (if used) -->
+    <string name="settings_language_title">App Language</string>
+    <string name="language_russian">Russian</string>
+    <string name="language_english">English</string>
+    <string name="settings_theme_title">App Theme</string>
+    <string name="theme_dark_mode">Dark Mode</string>
+    <string name="about_app_title">About App</string>
+    <string name="app_version">Version 1.0</string>
+    <string name="app_copyright">© 2025 Pavel Zhuravlev</string>
+
 </resources>

@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
+    android:textSize="16sp"
+    android:textColor="@color/colorOnSurface"
     android:padding="12dp"
-    android:gravity="center_vertical">
-
-    <TextView
-        android:id="@+id/typeName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Лекция"
-        android:textSize="14sp"
-        android:textColor="#333333" />
-
-</LinearLayout>
+    android:gravity="center_vertical"
+    android:background="@drawable/spinner_background" />

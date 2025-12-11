@@ -4,6 +4,7 @@
     <color name="colorPrimary">#90CAF9</color> <!-- Светло-синий -->
     <color name="colorPrimaryVariant">#5698F3</color> <!-- Более светлый оттенок -->
     <color name="colorOnPrimary">#000000</color> <!-- Черный на первичном фоне -->
+    <color name="colorOn">#1565C0</color>
 
     <color name="colorSecondary">#A5D6A7</color> <!-- Светло-зеленый -->
     <color name="colorSecondaryVariant">#75A87A</color> <!-- Более светлый оттенок -->

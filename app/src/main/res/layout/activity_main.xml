@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#1565C0"
+    android:background="@color/colorPrimary"
     android:fitsSystemWindows="true">
 
     <LinearLayout
@@ -12,16 +12,16 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp"
-        android:background="#1565C0">
+        android:padding="@dimen/activity_horizontal_margin"
+        android:background="@color/colorPrimary">
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="@dimen/lesson_detail_0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="🎓 Мое расписание"
-        android:textSize="24sp"
+        android:text="@string/app_name"
+        android:textSize="@dimen/text_size_header"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/colorOnPrimary"
         android:gravity="center" />
     <ImageButton
         android:id="@+id/menuButton"
@@ -29,15 +29,15 @@
         android:layout_height="wrap_content"
         android:src="@drawable/ic_menu"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:layout_marginStart="16dp" />
+        android:layout_marginStart="@dimen/activity_horizontal_margin" />
     </LinearLayout>
     <!-- Навигация по неделям -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#1565C0"
-        android:padding="8dp"
+        android:background="@color/colorPrimary"
+        android:padding="@dimen/lesson_detail_8dp"
         android:gravity="center">
 
         <LinearLayout
@@ -48,13 +48,13 @@
 
             <Button
                 android:id="@+id/prevWeekBtn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:text="←"
-                android:textSize="16sp"
-                android:textColor="#FFFFFF"
+                android:layout_width="@dimen/dialog_rgb_input_height"
+                android:layout_height="@dimen/dialog_rgb_input_height"
+                android:text="@string/button_prev_week"
+                android:textSize="@dimen/text_size_header"
+                android:textColor="@color/colorOnPrimary"
                 android:background="@drawable/week_nav_button"
-                android:layout_marginEnd="12dp" />
+                android:layout_marginEnd="@dimen/lesson_detail_input_padding" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -67,8 +67,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="29 апр - 5 мая"
-                    android:textSize="16sp"
-                    android:textColor="#FFFFFF"
+                    android:textSize="@dimen/text_size_large"
+                    android:textColor="@color/colorOnPrimary"
                     android:gravity="center"
                     android:textStyle="bold" />
 
@@ -76,23 +76,23 @@
                     android:id="@+id/weekTypeText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="(числитель)"
-                    android:textSize="12sp"
-                    android:textColor="#E3F2FD"
+                    android:text="@string/navigation_week_type_numerator"
+                    android:textSize="@dimen/text_size_small"
+                    android:textColor="@color/week_navigation_text_default"
                     android:gravity="center"
-                    android:layout_marginTop="2dp" />
+                    android:layout_marginTop="@dimen/lesson_detail_color_button_size" />
 
             </LinearLayout>
 
             <Button
                 android:id="@+id/nextWeekBtn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:text="→"
-                android:textSize="16sp"
-                android:textColor="#FFFFFF"
+                android:layout_width="@dimen/dialog_rgb_input_height"
+                android:layout_height="@dimen/dialog_rgb_input_height"
+                android:text="@string/button_next_week"
+                android:textSize="@dimen/text_size_header"
+                android:textColor="@color/colorOnPrimary"
                 android:background="@drawable/week_nav_button"
-                android:layout_marginStart="12dp" />
+                android:layout_marginStart="@dimen/lesson_detail_input_margin_bottom" />
 
         </LinearLayout>
 
@@ -104,77 +104,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:background="#1565C0"
-        android:padding="8dp"
+        android:background="@color/colorPrimary"
+        android:padding="@dimen/lesson_detail_8dp"
         android:gravity="center"
         android:weightSum="7">
 
     </LinearLayout>
-    <!-- ЗАМЕНИТЕ существующий deleteModeLayout на этот -->
-    <LinearLayout
-        android:id="@+id/deleteModeLayout"
+    <!-- КОНТЕЙНЕР ДЛЯ FRAGMENT -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#FFEBEE"
-        android:padding="12dp"
-        android:gravity="center_vertical"
-        android:visibility="gone">
+        android:layout_height="match_parent" />
 
-        <!-- ЗАМЕНИТЕ весь блок с "Выбрать все" на этот -->
-        <LinearLayout
-            android:id="@+id/selectAllLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginEnd="16dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:background="?attr/selectableItemBackground">
-
-            <ImageView
-                android:id="@+id/selectAllCheckBox"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/checkbox_unchecked"
-                android:layout_marginEnd="8dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Выбрать все"
-                android:textSize="14sp" />
-
-        </LinearLayout>
-
-        <!-- Кнопка удаления -->
-        <Button
-            android:id="@+id/deleteSelectedButton"
-            android:layout_width="0dp"
-            android:layout_height="44dp"
-            android:layout_weight="1"
-            android:text="🗑️ Удалить"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:textColor="#FFFFFF"
-            android:background="@drawable/delete_button_red" />
-
-    </LinearLayout>
-
-    <!-- Контейнер для расписания -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp"
-        android:background="#FFFFFF">
-
-        <LinearLayout
-            android:id="@+id/scheduleContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-        </LinearLayout>
-    </ScrollView>
 
 </LinearLayout>

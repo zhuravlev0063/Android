@@ -4,41 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="@dimen/lesson_detail_input_margin_bottom"
     android:background="@drawable/lesson_item_background"
-    android:padding="12dp"
+    android:padding="@dimen/lesson_detail_input_margin_bottom"
     android:clickable="true"
     android:focusable="true"
     android:foreground="?attr/selectableItemBackground">
 
-    <!-- ЗАМЕНЯЕМ CheckBox на ImageView -->
-    <ImageView
-        android:id="@+id/lessonCheckBox"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginEnd="8dp"
-        android:visibility="gone"
-        android:src="@drawable/checkbox_unchecked"
-        android:scaleType="centerInside" />
 
     <TextView
         android:id="@+id/lessonTime"
-        android:layout_width="80dp"
+        android:layout_width="@dimen/dialog_rgb_input_width"
         android:layout_height="wrap_content"
         android:text="09:00\n10:30"
-        android:textSize="14sp"
-        android:textColor="#666666"
+        android:textSize="@dimen/text_size_medium"
+        android:textColor="@color/colorOnSurfaceVariant"
         android:gravity="center" />
 
     <View
-        android:layout_width="1dp"
+        android:layout_width="@dimen/lesson_detail_color_button_size_1dp"
         android:layout_height="match_parent"
-        android:background="#E0E0E0"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="12dp" />
+        android:background="@color/colorOutline"
+        android:layout_marginStart="@dimen/lesson_detail_8dp"
+        android:layout_marginEnd="@dimen/lesson_detail_input_margin_bottom" />
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="@dimen/lesson_detail_0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:orientation="vertical">
@@ -47,27 +38,27 @@
             android:id="@+id/lessonName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Математический анализ"
-            android:textSize="16sp"
+            android:text="@string/default_new_lesson_name"
+            android:textSize="@dimen/text_size_large"
             android:textStyle="bold"
-            android:textColor="#333333" />
+            android:textColor="@color/colorOnSurface" />
 
         <TextView
             android:id="@+id/lessonRoom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Ауд. 301"
-            android:textSize="14sp"
-            android:textColor="#666666"
-            android:layout_marginTop="4dp" />
+            android:text="@string/default_new_lesson_room"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/colorOnSurfaceVariant"
+            android:layout_marginTop="@dimen/lesson_item_margin_bottom" />
 
         <TextView
             android:id="@+id/lessonTeacher"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Проф. Иванов И.И."
-            android:textSize="14sp"
-            android:textColor="#666666" />
+            android:text="@string/default_new_lesson_teacher"
+            android:textSize="@dimen/text_size_medium"
+            android:textColor="@color/colorOnSurfaceVariant" />
 
     </LinearLayout>
 
@@ -75,10 +66,10 @@
         android:id="@+id/lessonType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Лекция"
-        android:textSize="12sp"
-        android:padding="4dp"
-        android:textColor="#FFFFFF"
-        android:layout_marginStart="8dp" />
+        android:text="@string/lesson_type_lecture"
+        android:textSize="@dimen/text_size_small"
+        android:padding="@dimen/lesson_item_margin_bottom"
+        android:textColor="@color/colorOnPrimary"
+        android:layout_marginStart="@dimen/lesson_detail_8dp" />
 
 </LinearLayout>

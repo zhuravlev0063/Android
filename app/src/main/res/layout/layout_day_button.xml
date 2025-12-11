@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/dayButtonLayout"
-    android:layout_width="0dp"
+    android:layout_width="@dimen/lesson_detail_0dp"
     android:layout_height="wrap_content"
     android:layout_weight="1"
     android:orientation="vertical"
     android:background="@drawable/day_button_background"
-    android:layout_margin="4dp"
-    android:padding="8dp"
+    android:layout_margin="@dimen/lesson_item_margin_bottom"
+    android:padding="@dimen/lesson_detail_8dp"
     android:clickable="true"
     android:focusable="true">
 
@@ -15,10 +15,10 @@
         android:id="@+id/dayShortName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="ПН"
-        android:textSize="12sp"
+        android:text="@string/day_short_monday"
+        android:textSize="@dimen/text_size_small"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/colorOnPrimary"
         android:gravity="center" />
 
     <TextView
@@ -26,9 +26,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="15"
-        android:textSize="14sp"
+        android:textSize="@dimen/text_size_medium"
         android:textStyle="bold"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/colorOnPrimary"
         android:gravity="center" />
 
 </LinearLayout>
